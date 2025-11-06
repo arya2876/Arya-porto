@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Image Test</title>
+</head>
+<body>
+  <h1>Testing Image Paths</h1>
+  
+  <h2>Method 1: Absolute Path</h2>
+  <img src="/images/gambar1.png" alt="Profile" style="width: 150px; height: 150px; border: 2px solid red;">
+  
+  <h2>Method 2: Relative Path</h2>
+  <img src="./images/gambar1.png" alt="Profile" style="width: 150px; height: 150px; border: 2px solid blue;">
+  
+  <h2>Method 3: Without Leading Slash</h2>
+  <img src="images/gambar1.png" alt="Profile" style="width: 150px; height: 150px; border: 2px solid green;">
+  
+  <script>
+    // Check if images loaded
+    document.querySelectorAll('img').forEach((img, index) => {
+      img.onerror = function() {
+        console.error(`Image ${index + 1} failed to load:`, this.src);
+        this.style.border = '2px solid red';
+        this.alt = 'FAILED TO LOAD: ' + this.src;
+      };
+      img.onload = function() {
+        console.log(`Image ${index + 1} loaded successfully:`, this.src);
+        this.style.border = '2px solid green';
+      };
+    });
+  </script>
+</body>
+</html>
