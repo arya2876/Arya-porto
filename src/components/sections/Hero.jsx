@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
 import CountUp from 'react-countup';
+import { useState, useEffect } from 'react';
 import { FaGithub, FaLinkedin, FaInstagram, FaTiktok, FaDownload, FaArrowDown } from 'react-icons/fa';
 import { APP_CONFIG, HERO_STATS } from '../../utils/constants';
 import { personalInfo } from '../../data/personalInfo';
@@ -15,6 +16,25 @@ import ElasticBounce from '../animations/ElasticBounce';
  * Hero Section with typing animation, stats counter, and floating elements
  */
 const Hero = () => {
+  // State untuk berganti gambar otomatis
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Array gambar yang akan berganti
+  const heroImages = [
+    '/images/Versi kartun.png',
+    '/images/gambar1.png'
+  ];
+
+  // Auto change image setiap 5 detik
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        (prevIndex + 1) % heroImages.length
+      );
+    }, 5000); // Ganti setiap 5 detik
+
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
   const scrollToAbout = () => {
     const element = document.getElementById('about');
     if (element) {
@@ -209,18 +229,47 @@ const Hero = () => {
                 transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
               >
                 <div className="relative rounded-full overflow-hidden aspect-square border-4 border-white dark:border-dark-card shadow-2xl">
-                  <img
-                    src={personalInfo.profileImage}
-                    alt={personalInfo.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = personalInfo.profileImageFallback;
-                    }}
-                  />
+                  {/* Multiple images with fade transition */}
+                  {heroImages.map((image, index) => (
+                    <motion.img
+                      key={image}
+                      src={image}
+                      alt={`${personalInfo.name} - ${index + 1}`}
+                      className="w-full h-full object-cover absolute inset-0"
+                      initial={{ opacity: 0 }}
+                      animate={{ 
+                        opacity: currentImageIndex === index ? 1 : 0,
+                        scale: currentImageIndex === index ? 1 : 1.1
+                      }}
+                      transition={{ 
+                        duration: 1,
+                        ease: 'easeInOut'
+                      }}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = personalInfo.profileImageFallback;
+                      }}
+                    />
+                  ))}
                   
                   {/* Overlay Gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-primary-500/20 to-transparent" />
+                </div>
+
+                {/* Image Indicators */}
+                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+                  {heroImages.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        currentImageIndex === index 
+                          ? 'w-8 bg-primary-500' 
+                          : 'w-2 bg-light-border dark:bg-dark-border hover:bg-primary-500/50'
+                      }`}
+                      aria-label={`Switch to image ${index + 1}`}
+                    />
+                  ))}
                 </div>
               </motion.div>
 
