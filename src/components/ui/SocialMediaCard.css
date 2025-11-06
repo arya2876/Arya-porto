@@ -1,0 +1,172 @@
+.social-icons-container {
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+  border-radius: 1rem;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.social-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.social-icons-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  justify-items: center;
+}
+
+.social-icon-popup {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1.2rem;
+  font-size: 2rem;
+  background: transparent;
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  color: rgba(139, 92, 246, 0.8);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.social-icon-popup:hover {
+  transform: translateY(-10px) scale(1.15);
+  border-color: transparent;
+  animation: bounce 0.6s ease-in-out;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-10px) scale(1.15);
+  }
+  50% {
+    transform: translateY(-15px) scale(1.2);
+  }
+}
+
+.social-icon-popup::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1.2rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.social-icon-popup.instagram::before {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.social-icon-popup.instagram:hover::before {
+  opacity: 1;
+}
+
+.social-icon-popup.instagram:hover {
+  box-shadow: 0 15px 40px rgba(225, 48, 108, 0.5);
+}
+
+.social-icon-popup.tiktok::before {
+  background: linear-gradient(135deg, #000000 0%, #25F4EE 50%, #FE2C55 100%);
+}
+
+.social-icon-popup.tiktok:hover::before {
+  opacity: 1;
+}
+
+.social-icon-popup.tiktok:hover {
+  box-shadow: 0 15px 40px rgba(254, 44, 85, 0.5);
+}
+
+.social-icon-popup.linkedin::before {
+  background: linear-gradient(135deg, #0077b5 0%, #00a0dc 100%);
+}
+
+.social-icon-popup.linkedin:hover::before {
+  opacity: 1;
+}
+
+.social-icon-popup.linkedin:hover {
+  box-shadow: 0 15px 40px rgba(0, 119, 181, 0.5);
+}
+
+.social-icon-popup.github::before {
+  background: linear-gradient(135deg, #24292e 0%, #8b5cf6 100%);
+}
+
+.social-icon-popup.github:hover::before {
+  opacity: 1;
+}
+
+.social-icon-popup.github:hover {
+  box-shadow: 0 15px 40px rgba(139, 92, 246, 0.5);
+}
+
+.social-icon-popup svg {
+  width: 2rem;
+  height: 2rem;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.social-icon-popup:hover svg {
+  transform: scale(1.1) rotate(5deg);
+  color: white;
+  filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.5));
+}
+
+.social-icon-popup:active {
+  transform: translateY(-5px) scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .social-icons-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .social-icon-popup {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+  }
+
+  .social-icon-popup svg {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .social-icons-container {
+    padding: 1.5rem;
+  }
+
+  .social-title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .social-icons-grid {
+    gap: 1rem;
+  }
+
+  .social-icon-popup {
+    width: 65px;
+    height: 65px;
+  }
+}
