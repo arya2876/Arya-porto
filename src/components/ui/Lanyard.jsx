@@ -101,6 +101,10 @@ function LanyardCard() {
               src={personalInfo.profileImage} 
               alt={personalInfo.name}
               className="w-10 h-10 rounded-full object-cover"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = personalInfo.profileImageFallback || 'https://via.placeholder.com/150';
+              }}
             />
           </span>
         </div>

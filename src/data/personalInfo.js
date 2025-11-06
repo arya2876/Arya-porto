@@ -6,6 +6,7 @@ export const personalInfo = {
   tagline: "Passionate about creating innovative web solutions",
   description: "Saya seorang developer yang passionate dalam menciptakan solusi web yang inovatif. Mari berkolaborasi untuk mewujudkan ide-ide kreatif menjadi kenyataan digital yang menakjubkan!",
   profileImage: "/images/gambar1.png",
+  profileImageFallback: "https://via.placeholder.com/150", // Fallback jika gambar tidak load
   status: "Available for projects",
   email: "arya@example.com", // Update with your email
   phone: "+62 xxx-xxxx-xxxx", // Update with your phone
