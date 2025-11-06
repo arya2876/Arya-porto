@@ -3,6 +3,7 @@ import { TypeAnimation } from 'react-type-animation';
 import CountUp from 'react-countup';
 import { FaGithub, FaLinkedin, FaInstagram, FaTiktok, FaDownload, FaArrowDown } from 'react-icons/fa';
 import { APP_CONFIG, HERO_STATS } from '../../utils/constants';
+import { personalInfo } from '../../data/personalInfo';
 import Button from '../ui/Button';
 import FadeIn from '../animations/FadeIn';
 import ScrollGradientText from '../ui/ScrollGradientText';
@@ -209,9 +210,13 @@ const Hero = () => {
               >
                 <div className="relative rounded-full overflow-hidden aspect-square border-4 border-white dark:border-dark-card shadow-2xl">
                   <img
-                    src="Versi kartun.png"
-                    alt={APP_CONFIG.author}
+                    src={personalInfo.profileImage}
+                    alt={personalInfo.name}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = personalInfo.profileImageFallback;
+                    }}
                   />
                   
                   {/* Overlay Gradient */}
