@@ -5,7 +5,9 @@ import { resolve } from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  assetsInclude: ['**/*.glb'],
+  base: '/',
+  publicDir: 'public',
+  assetsInclude: ['**/*.glb', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg'],
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
