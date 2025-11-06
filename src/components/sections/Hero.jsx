@@ -90,7 +90,7 @@ const Hero = () => {
                 className="inline-block mb-6"
               >
                 <span className="px-6 py-2 rounded-full bg-gradient-to-r from-primary-500/10 to-secondary-500/10 border border-primary-500/20 text-sm font-medium text-primary-500 dark:text-primary-400">
-                  MODERN WEB DEVELOPER  2024
+                  ✨ WELCOME TO MY PORTFOLIO
                 </span>
               </motion.div>
               
@@ -254,22 +254,6 @@ const Hero = () => {
                   
                   {/* Overlay Gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-primary-500/20 to-transparent" />
-                </div>
-
-                {/* Image Indicators */}
-                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
-                  {heroImages.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentImageIndex(index)}
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        currentImageIndex === index 
-                          ? 'w-8 bg-primary-500' 
-                          : 'w-2 bg-light-border dark:bg-dark-border hover:bg-primary-500/50'
-                      }`}
-                      aria-label={`Switch to image ${index + 1}`}
-                    />
-                  ))}
                 </div>
               </motion.div>
 
