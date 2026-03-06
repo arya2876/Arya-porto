@@ -1,4 +1,4 @@
-import { getSupabase, handleCors, requireAuth, jsonResponse, jsonError } from './_lib/supabase.js';
+import { handleCors, requireAuth, jsonResponse, jsonError } from './_lib/supabase.js';
 
 export default async function handler(req, res) {
     if (handleCors(req, res)) return;
@@ -10,42 +10,42 @@ export default async function handler(req, res) {
     if (!requireAuth(req, res)) return;
 
     try {
-        const supabase = getSupabase();
+        const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+        const apiKey = process.env.CLOUDINARY_API_KEY;
+        const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
-        // For Vercel, we use Supabase Storage for file uploads
-        // The admin panel sends files as base64 or via direct Supabase upload
-        // This endpoint returns the Supabase storage URL config
-        const { data: buckets } = await supabase.storage.listBuckets();
-        const portfolioBucket = buckets?.find(b => b.name === 'portfolio');
-
-        if (!portfolioBucket) {
-            // Create the bucket if it doesn't exist
-            await supabase.storage.createBucket('portfolio', {
-                public: true,
-                allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'application/pdf'],
-                fileSizeLimit: 5 * 1024 * 1024, // 5MB
-            });
+        if (!cloudName || !apiKey || !apiSecret) {
+            return jsonError(res, 'Cloudinary not configured. Add CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET to env.', 500);
         }
 
-        // Generate a signed upload URL for the client
-        const filename = `${Date.now()}-${req.body.filename || 'upload'}`;
-        const folder = req.body.folder || 'images';
-        const filePath = `${folder}/${filename}`;
+        const { image } = req.body; // base64 string
+        if (!image) return jsonError(res, 'No image provided', 400);
 
-        const { data, error } = await supabase.storage
-            .from('portfolio')
-            .createSignedUploadUrl(filePath);
+        const folder = req.body.folder || 'portfolio';
 
-        if (error) return jsonError(res, error.message, 500);
+        // Upload to Cloudinary via REST API
+        const formData = new URLSearchParams();
+        formData.append('file', image);
+        formData.append('upload_preset', 'portfolio_unsigned');
+        formData.append('folder', folder);
 
-        const publicUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/portfolio/${filePath}`;
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+            method: 'POST',
+            body: formData,
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            return jsonError(res, data.error.message, 500);
+        }
 
         return jsonResponse(res, {
             success: true,
-            signedUrl: data.signedUrl,
-            token: data.token,
-            path: filePath,
-            publicUrl,
+            url: data.secure_url,
+            publicId: data.public_id,
+            width: data.width,
+            height: data.height,
         });
     } catch (err) {
         return jsonError(res, err.message, 500);

@@ -16,6 +16,7 @@ import TechStack from './components/sections/TechStack';
 import Portfolio from './components/sections/Portfolio';
 import WhyChoose from './components/sections/WhyChoose';
 import Testimonials from './components/sections/Testimonials';
+import Certificates from './components/sections/Certificates';
 import Contact from './components/sections/Contact';
 
 /**
@@ -52,6 +53,7 @@ function App() {
             <Portfolio />
             <WhyChoose />
             <Testimonials />
+            <Certificates />
             <Contact />
           </Layout>
         </PortfolioDataProvider>

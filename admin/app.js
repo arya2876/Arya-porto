@@ -148,6 +148,44 @@ function getField(name) {
 }
 
 // ===========================
+// Cloudinary Upload
+// ===========================
+function openCloudinaryUpload(targetFieldId) {
+    if (typeof cloudinary === 'undefined') {
+        toast('Cloudinary widget not loaded', 'error');
+        return;
+    }
+    const widget = cloudinary.createUploadWidget({
+        cloudName: 'YOUR_CLOUD_NAME',  // Will be replaced by user
+        uploadPreset: 'portfolio_unsigned',
+        folder: 'portfolio',
+        maxFiles: 1,
+        cropping: false,
+        sources: ['local', 'url', 'camera'],
+        resourceType: 'image',
+        clientAllowedFormats: ['png', 'jpg', 'jpeg', 'gif', 'webp'],
+        maxFileSize: 5000000,
+    }, (error, result) => {
+        if (!error && result && result.event === 'success') {
+            document.getElementById(targetFieldId).value = result.info.secure_url;
+            toast('Image uploaded!');
+        }
+    });
+    widget.open();
+}
+
+function imageUploadField(label, name, value = '') {
+    return `<div class="form-group">
+        <label>${label}</label>
+        <div style="display:flex;gap:8px">
+            <input type="text" class="form-control" id="f_${name}" value="${value || ''}" placeholder="Image URL" style="flex:1">
+            <button type="button" class="btn btn-primary btn-sm" onclick="openCloudinaryUpload('f_${name}')">📷 Upload</button>
+        </div>
+        ${value ? `<img src="${value}" style="max-width:200px;margin-top:8px;border-radius:8px;border:1px solid var(--border)" alt="preview">` : ''}
+    </div>`;
+}
+
+// ===========================
 // Dashboard
 // ===========================
 async function loadDashboard() {
@@ -365,7 +403,7 @@ function projectForm(s = {}) {
     <div class="form-row">${formField('Category', 'category', s.category)}${formField('Year', 'year', s.year)}</div>
     ${formField('Short Description', 'description', s.description, 'textarea')}
     ${formField('Full Description', 'full_description', s.full_description || s.fullDescription, 'textarea')}
-    ${formField('Image URL', 'image', s.image)}
+    ${imageUploadField('Project Image', 'image', s.image)}
     ${formField('Technologies (comma separated)', 'technologies', techs)}
     ${formField('Tags (comma separated)', 'tags', tags)}
     <div class="form-row">${formField('Live URL', 'live_url', s.live_url || s.liveUrl)}${formField('GitHub URL', 'github_url', s.github_url || s.githubUrl)}</div>
@@ -478,7 +516,7 @@ function certForm(s = {}) {
     ${formField('Title', 'title', s.title)}${formField('Issuer', 'issuer', s.issuer)}
     <div class="form-row">${formField('Date', 'date', s.date)}${formField('Credential ID', 'credential_id', s.credential_id)}</div>
     ${formField('Credential URL', 'credential_url', s.credential_url)}
-    ${formField('Image URL', 'image', s.image)}
+    ${imageUploadField('Certificate Image', 'image', s.image)}
     ${formField('Category', 'category', '', 'select', ['certification', 'award', 'achievement', 'course'].map(c => `<option value="${c}" ${(s.category || 'certification') === c ? 'selected' : ''}>${c}</option>`).join(''))}`;
 }
 function addCert() { openModal('Add Certificate', certForm(), `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveCert()">Save</button>`); }

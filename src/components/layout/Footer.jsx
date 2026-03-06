@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaInstagram, FaTiktok, FaHeart, FaArrowUp } from 'react-icons/fa';
 import { APP_CONFIG, NAV_LINKS } from '../../utils/constants';
 import useScrollAnimation from '../../hooks/useScrollAnimation';
+import { usePortfolioContext } from '../../context/PortfolioDataContext';
 
 /**
  * Footer Component with multiple sections and back-to-top button
@@ -9,12 +10,19 @@ import useScrollAnimation from '../../hooks/useScrollAnimation';
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const { scrollToTop } = useScrollAnimation();
+  const { personalInfo, socialLinks: contextSocial } = usePortfolioContext();
 
-  const socialLinks = [
-    { icon: FaInstagram, href: APP_CONFIG.social.instagram, label: 'Instagram', colors: 'from-pink-500 to-purple-600', hoverShadow: 'hover:shadow-pink-500/50' },
-    { icon: FaTiktok, href: APP_CONFIG.social.tiktok, label: 'TikTok', colors: 'from-black to-cyan-400', hoverShadow: 'hover:shadow-cyan-400/50' },
-    { icon: FaLinkedin, href: APP_CONFIG.social.linkedin, label: 'LinkedIn', colors: 'from-blue-600 to-blue-400', hoverShadow: 'hover:shadow-blue-500/50' },
-    { icon: FaGithub, href: APP_CONFIG.social.github, label: 'GitHub', colors: 'from-gray-800 to-purple-600', hoverShadow: 'hover:shadow-purple-500/50' },
+  // Use context data with fallback to APP_CONFIG
+  const email = personalInfo?.email || APP_CONFIG.email;
+  const phone = personalInfo?.phone || APP_CONFIG.phone;
+  const location = personalInfo?.location || APP_CONFIG.location;
+  const authorName = personalInfo?.name || APP_CONFIG.author;
+
+  const socialLinksData = [
+    { icon: FaInstagram, href: contextSocial?.instagram || APP_CONFIG.social.instagram, label: 'Instagram', colors: 'from-pink-500 to-purple-600', hoverShadow: 'hover:shadow-pink-500/50' },
+    { icon: FaTiktok, href: contextSocial?.tiktok || APP_CONFIG.social.tiktok, label: 'TikTok', colors: 'from-black to-cyan-400', hoverShadow: 'hover:shadow-cyan-400/50' },
+    { icon: FaLinkedin, href: contextSocial?.linkedin || APP_CONFIG.social.linkedin, label: 'LinkedIn', colors: 'from-blue-600 to-blue-400', hoverShadow: 'hover:shadow-blue-500/50' },
+    { icon: FaGithub, href: contextSocial?.github || APP_CONFIG.social.github, label: 'GitHub', colors: 'from-gray-800 to-purple-600', hoverShadow: 'hover:shadow-purple-500/50' },
   ];
 
   const quickLinks = NAV_LINKS.slice(1, 5); // Skip "Home" for footer
@@ -23,7 +31,7 @@ const Footer = () => {
     e.preventDefault();
     const targetId = href.replace('#', '');
     const element = document.getElementById(targetId);
-    
+
     if (element) {
       const offset = 80;
       const elementPosition = element.getBoundingClientRect().top;
@@ -58,19 +66,19 @@ const Footer = () => {
       {/* Decorative Elements */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary-500/5 rounded-full blur-3xl" />
-      
+
       <div className="container-custom py-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Brand Section */}
           <div className="space-y-4">
-            <motion.h3 
+            <motion.h3
               className="text-3xl font-bold font-display"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-secondary-500">
-                {APP_CONFIG.author.toUpperCase()}
+                {authorName.toUpperCase()}
               </span>
             </motion.h3>
             <p className="text-light-text-secondary dark:text-dark-text-secondary leading-relaxed">
@@ -78,7 +86,7 @@ const Footer = () => {
               Creating experiences that blend functionality with aesthetics.
             </p>
             <div className="flex items-center gap-3">
-              {socialLinks.map((social, index) => (
+              {socialLinksData.map((social, index) => (
                 <motion.a
                   key={social.label}
                   href={social.href}
@@ -157,22 +165,22 @@ const Footer = () => {
             </h4>
             <ul className="space-y-2 text-light-text-secondary dark:text-dark-text-secondary">
               <li>
-                <a 
-                  href={`mailto:${APP_CONFIG.email}`}
+                <a
+                  href={`mailto:${email}`}
                   className="hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
                 >
-                  {APP_CONFIG.email}
+                  {email}
                 </a>
               </li>
               <li>
-                <a 
-                  href={`tel:${APP_CONFIG.phone}`}
+                <a
+                  href={`tel:${phone}`}
                   className="hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
                 >
-                  {APP_CONFIG.phone}
+                  {phone}
                 </a>
               </li>
-              <li>{APP_CONFIG.location}</li>
+              <li>{location}</li>
             </ul>
           </div>
         </div>
@@ -180,26 +188,26 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-light-border dark:border-dark-border">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <motion.p 
+            <motion.p
               className="text-light-text-secondary dark:text-dark-text-secondary text-sm text-center md:text-left"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
             >
-              © {currentYear} <span className="font-semibold text-gradient">{APP_CONFIG.author}</span>. All rights reserved. 
+              © {currentYear} <span className="font-semibold text-gradient">{authorName}</span>. All rights reserved.
               <span className="hidden sm:inline"> Crafted with{' '}
                 <FaHeart className="inline w-4 h-4 text-red-500 animate-pulse" /> and passion
               </span>
             </motion.p>
             <div className="flex items-center gap-6 text-sm">
-              <a 
-                href="#privacy" 
+              <a
+                href="#privacy"
                 className="text-light-text-secondary dark:text-dark-text-secondary hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
               >
                 Privacy Policy
               </a>
-              <a 
-                href="#terms" 
+              <a
+                href="#terms"
                 className="text-light-text-secondary dark:text-dark-text-secondary hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
               >
                 Terms of Service
