@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-page">
+        <div class="login-card">
+            <h1>🔐 Admin Panel</h1>
+            <p>Login untuk mengelola portfolio</p>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="loginUser" class="form-control" placeholder="username" value="admin">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPass" class="form-control" placeholder="password">
+            </div>
+            <button class="btn btn-primary btn-block" onclick="doLogin()">Login</button>
+            <p id="loginError" style="color:var(--danger);text-align:center;margin-top:16px" class="hidden"></p>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="appPage" class="app hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2>⚡ Portfolio</h2>
+                <span>Admin Dashboard</span>
+            </div>
+            <nav id="navMenu"></nav>
+            <div class="logout-btn">
+                <button class="btn btn-ghost btn-block" onclick="doLogout()">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="header">
+                <h1 id="pageTitle">Dashboard</h1>
+                <div class="header-actions">
+                    <span id="adminName" style="color:var(--text-secondary)"></span>
+                    <a href="../" target="_blank" class="btn btn-ghost btn-sm">🌐 View Site</a>
+                </div>
+            </div>
+            <div id="content"></div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div id="modalOverlay" class="modal-overlay hidden" onclick="if(event.target===this)closeModal()">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Edit</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer" id="modalFooter"></div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

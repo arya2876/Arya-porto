@@ -3,8 +3,8 @@ import { TypeAnimation } from 'react-type-animation';
 import CountUp from 'react-countup';
 import { useState, useEffect } from 'react';
 import { FaGithub, FaLinkedin, FaInstagram, FaTiktok, FaDownload, FaArrowDown } from 'react-icons/fa';
-import { APP_CONFIG, HERO_STATS } from '../../utils/constants';
-import { personalInfo } from '../../data/personalInfo';
+import { APP_CONFIG } from '../../utils/constants';
+import { usePortfolioContext } from '../../context/PortfolioDataContext';
 import Button from '../ui/Button';
 import FadeIn from '../animations/FadeIn';
 import ScrollGradientText from '../ui/ScrollGradientText';
@@ -16,9 +16,10 @@ import ElasticBounce from '../animations/ElasticBounce';
  * Hero Section with typing animation, stats counter, and floating elements
  */
 const Hero = () => {
+  const { personalInfo, statistics } = usePortfolioContext();
   // State untuk berganti gambar otomatis
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
+
   // Array gambar yang akan berganti
   const heroImages = [
     '/images/Versi kartun.png',
@@ -28,7 +29,7 @@ const Hero = () => {
   // Auto change image setiap 5 detik
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => 
+      setCurrentImageIndex((prevIndex) =>
         (prevIndex + 1) % heroImages.length
       );
     }, 5000); // Ganti setiap 5 detik
@@ -47,7 +48,7 @@ const Hero = () => {
       {/* Animated Background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 via-secondary-500/10 to-accent-start/10 dark:from-primary-500/5 dark:via-secondary-500/5 dark:to-accent-start/5" />
-        
+
         {/* Animated Circles */}
         {[...Array(5)].map((_, i) => (
           <motion.div
@@ -93,14 +94,14 @@ const Hero = () => {
                   ✨ WELCOME TO MY PORTFOLIO
                 </span>
               </motion.div>
-              
+
               {/* Large Tagline - Omio Style with StaggerText */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.8 }}
               >
-                <ScrollGradientText 
+                <ScrollGradientText
                   as="h1"
                   className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display mb-2 leading-tight text-light-text dark:text-dark-text"
                   scrollColor="#8B5CF6"
@@ -109,7 +110,7 @@ const Hero = () => {
                     CRAFTING DIGITAL
                   </StaggerText>
                 </ScrollGradientText>
-                <ScrollGradientText 
+                <ScrollGradientText
                   as="h1"
                   className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display mb-2 leading-tight text-light-text dark:text-dark-text"
                   scrollColor="#3B82F6"
@@ -118,7 +119,7 @@ const Hero = () => {
                     EXPERIENCES
                   </StaggerText>
                 </ScrollGradientText>
-                <ScrollGradientText 
+                <ScrollGradientText
                   as="h1"
                   className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display mb-8 leading-tight text-light-text dark:text-dark-text"
                   scrollColor="#06B6D4"
@@ -163,23 +164,23 @@ const Hero = () => {
                 transition={{ delay: 0.8 }}
                 className="text-base sm:text-lg mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed text-light-text-secondary dark:text-dark-text-secondary"
               >
-                As a passionate web developer and designer, I specialize in creating 
-                intuitive and engaging digital experiences that blend functionality with 
+                As a passionate web developer and designer, I specialize in creating
+                intuitive and engaging digital experiences that blend functionality with
                 aesthetics. From concept to final product, I bring visions to life.
               </motion.p>
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-4 justify-center lg:justify-start mb-8">
-                <Button 
-                  variant="gradient" 
+                <Button
+                  variant="gradient"
                   size="lg"
                   icon={FaDownload}
                   onClick={() => window.open(APP_CONFIG.resumeUrl, '_blank')}
                 >
                   Download CV
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="lg"
                   onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                 >
@@ -221,7 +222,7 @@ const Hero = () => {
             <div className="relative w-full max-w-md mx-auto">
               {/* Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full blur-3xl opacity-30 animate-pulse-slow" />
-              
+
               {/* Image Container */}
               <motion.div
                 className="relative"
@@ -237,11 +238,11 @@ const Hero = () => {
                       alt={`${personalInfo.name} - ${index + 1}`}
                       className="w-full h-full object-cover absolute inset-0"
                       initial={{ opacity: 0 }}
-                      animate={{ 
+                      animate={{
                         opacity: currentImageIndex === index ? 1 : 0,
                         scale: currentImageIndex === index ? 1 : 1.1
                       }}
-                      transition={{ 
+                      transition={{
                         duration: 1,
                         ease: 'easeInOut'
                       }}
@@ -251,7 +252,7 @@ const Hero = () => {
                       }}
                     />
                   ))}
-                  
+
                   {/* Overlay Gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-primary-500/20 to-transparent" />
                 </div>
@@ -290,7 +291,7 @@ const Hero = () => {
         {/* Stats Counter */}
         <FadeIn delay={0.6} className="mt-20">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            {HERO_STATS.map((stat, index) => (
+            {(statistics || []).map((stat, index) => (
               <motion.div
                 key={stat.label}
                 className="text-center p-6 rounded-2xl bg-glass border border-white/20"

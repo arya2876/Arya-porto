@@ -5,12 +5,13 @@ import Card from '../ui/Card';
 import FadeIn from '../animations/FadeIn';
 import BackgroundText from '../ui/BackgroundText';
 import ScrollGradientText from '../ui/ScrollGradientText';
-import { experienceTimeline } from '../../data/experience';
+import { usePortfolioContext } from '../../context/PortfolioDataContext';
 
 /**
  * Experience Section with interactive timeline
  */
 const Experience = () => {
+  const { experience: experienceTimeline } = usePortfolioContext();
   const [expandedItem, setExpandedItem] = useState(null);
 
   // Map icon based on type
@@ -68,7 +69,7 @@ const Experience = () => {
       <div className="container-custom">
         {/* Section Header */}
         <FadeIn className="text-center mb-16">
-          <ScrollGradientText 
+          <ScrollGradientText
             as="h2"
             className="text-4xl sm:text-5xl lg:text-6xl font-display mb-4 text-light-text dark:text-dark-text"
             scrollColor="#06B6D4"
@@ -91,17 +92,15 @@ const Experience = () => {
                 )}
 
                 {/* Timeline Dot */}
-                <div className={`absolute left-0 md:left-12 top-0 w-8 h-8 rounded-full border-4 border-light-card dark:border-dark-card flex items-center justify-center ${
-                  exp.isCurrent ? 'bg-primary-500 shadow-glow-primary' : 'bg-light-bg dark:bg-dark-bg'
-                }`}>
+                <div className={`absolute left-0 md:left-12 top-0 w-8 h-8 rounded-full border-4 border-light-card dark:border-dark-card flex items-center justify-center ${exp.isCurrent ? 'bg-primary-500 shadow-glow-primary' : 'bg-light-bg dark:bg-dark-bg'
+                  }`}>
                   <exp.icon className={`w-4 h-4 ${getIconColor(exp.type)}`} />
                 </div>
 
                 {/* Content Card */}
                 <Card
-                  className={`${getGlowColor(exp.type, exp.isCurrent)} transition-all duration-300 ${
-                    expandedItem === exp.id ? 'shadow-2xl' : ''
-                  }`}
+                  className={`${getGlowColor(exp.type, exp.isCurrent)} transition-all duration-300 ${expandedItem === exp.id ? 'shadow-2xl' : ''
+                    }`}
                   hover={true}
                 >
                   <div className="flex items-start justify-between mb-4">

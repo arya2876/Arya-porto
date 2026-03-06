@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaGithub, FaExternalLinkAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import projects from '../../data/projects';
-import { PORTFOLIO_CATEGORIES } from '../../utils/constants';
+import { usePortfolioContext } from '../../context/PortfolioDataContext';
 import Button from '../ui/Button';
 import Modal from '../ui/Modal';
 import FadeIn from '../animations/FadeIn';
@@ -16,6 +15,7 @@ import ProjectPlaceholder from '../ui/ProjectPlaceholder';
  * Portfolio Section with filter and modal details
  */
 const Portfolio = () => {
+  const { projects, portfolioCategories: PORTFOLIO_CATEGORIES } = usePortfolioContext();
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedProject, setSelectedProject] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -48,7 +48,7 @@ const Portfolio = () => {
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }} />
       </div>
-      
+
       <div className="container-custom relative z-10">
         {/* Section Header - Omio Style */}
         <FadeIn className="text-center mb-20">
@@ -61,7 +61,7 @@ const Portfolio = () => {
               MY WORKS
             </span>
             <div className="mb-6">
-              <ScrollGradientText 
+              <ScrollGradientText
                 as="span"
                 className="text-4xl sm:text-5xl lg:text-6xl font-display text-light-text dark:text-dark-text"
                 scrollColor="#3B82F6"
@@ -70,7 +70,7 @@ const Portfolio = () => {
                   LET&apos;S EXPLORE
                 </StaggerText>
               </ScrollGradientText>
-              <ScrollGradientText 
+              <ScrollGradientText
                 as="span"
                 className="text-4xl sm:text-5xl lg:text-6xl font-display mx-4 text-light-text dark:text-dark-text"
                 scrollColor="#EC4899"
@@ -79,7 +79,7 @@ const Portfolio = () => {
                   FEATURED
                 </StaggerText>
               </ScrollGradientText>
-              <ScrollGradientText 
+              <ScrollGradientText
                 as="span"
                 className="text-4xl sm:text-5xl lg:text-6xl font-display text-light-text dark:text-dark-text"
                 scrollColor="#10B981"
@@ -90,7 +90,7 @@ const Portfolio = () => {
               </ScrollGradientText>
             </div>
             <p className="text-lg max-w-3xl mx-auto text-light-text-secondary dark:text-dark-text-secondary">
-              Featured projects showcase the breadth and depth of expertise, highlighting 
+              Featured projects showcase the breadth and depth of expertise, highlighting
               innovative solutions and creative strategies brought to every endeavor.
             </p>
           </motion.div>
@@ -105,11 +105,10 @@ const Portfolio = () => {
                 setActiveCategory(category.id);
                 setCurrentImageIndex(0);
               }}
-              className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
-                activeCategory === category.id
+              className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${activeCategory === category.id
                   ? 'bg-primary-500 text-white shadow-lg'
                   : 'bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text hover:bg-primary-500/10'
-              }`}
+                }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -129,7 +128,7 @@ const Portfolio = () => {
             >
               Featured Projects <span className="text-gradient">Showcase</span>
             </motion.h3>
-            <ProjectCard3D 
+            <ProjectCard3D
               projects={filteredProjects.map(project => ({
                 title: project.title,
                 description: project.description,
@@ -169,10 +168,10 @@ const Portfolio = () => {
                     }}
                   />
                 ) : null}
-                
+
                 {/* Placeholder jika image tidak tersedia */}
                 <div className={selectedProject.images[currentImageIndex] ? 'hidden' : 'block h-full'}>
-                  <ProjectPlaceholder 
+                  <ProjectPlaceholder
                     variant={selectedProject.placeholderVariant || 'code'}
                     size="full"
                   />
@@ -199,11 +198,10 @@ const Portfolio = () => {
                         <button
                           key={index}
                           onClick={() => setCurrentImageIndex(index)}
-                          className={`w-2 h-2 rounded-full transition-all ${
-                            index === currentImageIndex
+                          className={`w-2 h-2 rounded-full transition-all ${index === currentImageIndex
                               ? 'bg-white w-8'
                               : 'bg-white/50'
-                          }`}
+                            }`}
                         />
                       ))}
                     </div>

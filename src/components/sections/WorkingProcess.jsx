@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { FaCheckCircle } from 'react-icons/fa';
-import { workingProcess } from '../../data/workingProcess';
+import { FaCheckCircle, FaLightbulb, FaPencilRuler, FaCode, FaRocket } from 'react-icons/fa';
+import { usePortfolioContext } from '../../context/PortfolioDataContext';
 import FadeIn from '../animations/FadeIn';
 import Card from '../ui/Card';
 import ScrollGradientText from '../ui/ScrollGradientText';
@@ -10,6 +10,15 @@ import ScrollGradientText from '../ui/ScrollGradientText';
  * Shows the step-by-step workflow
  */
 const WorkingProcess = () => {
+  const { workingProcess: wpData } = usePortfolioContext();
+
+  // Map icon names from DB to React components
+  const iconMap = { FaLightbulb, FaPencilRuler, FaCode, FaRocket, FaCheckCircle };
+  const workingProcess = (wpData || []).map(step => ({
+    ...step,
+    icon: iconMap[step.icon] || FaCode,
+  }));
+
   return (
     <section id="process" className="section-padding bg-light-bg dark:bg-dark-bg relative overflow-hidden">
       {/* Background Pattern */}
@@ -32,14 +41,14 @@ const WorkingProcess = () => {
               HOW WE WORK
             </span>
             <div className="mb-6">
-              <ScrollGradientText 
+              <ScrollGradientText
                 as="span"
                 className="text-4xl sm:text-5xl lg:text-6xl font-display text-light-text dark:text-dark-text"
                 scrollColor="#F59E0B"
               >
                 OUR WORKING
               </ScrollGradientText>
-              <ScrollGradientText 
+              <ScrollGradientText
                 as="span"
                 className="text-4xl sm:text-5xl lg:text-6xl font-display ml-4 text-light-text dark:text-dark-text"
                 scrollColor="#3B82F6"
@@ -48,7 +57,7 @@ const WorkingProcess = () => {
               </ScrollGradientText>
             </div>
             <p className="text-lg max-w-3xl mx-auto text-light-text-secondary dark:text-dark-text-secondary">
-              A structured approach to delivering exceptional results. From initial discovery 
+              A structured approach to delivering exceptional results. From initial discovery
               to final launch, every step is crafted for success.
             </p>
           </motion.div>
@@ -65,7 +74,7 @@ const WorkingProcess = () => {
                 <Card className="relative h-full overflow-hidden group">
                   {/* Background Gradient */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${step.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                  
+
                   <div className="relative p-8">
                     {/* Number Badge - Omio Style */}
                     <div className="flex items-start gap-6 mb-6">
@@ -76,7 +85,7 @@ const WorkingProcess = () => {
                       >
                         {step.number}
                       </motion.div>
-                      
+
                       <div className="flex-1">
                         <div className={`inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br ${step.color} mb-4 group-hover:scale-110 transition-transform duration-300`}>
                           <step.icon className="w-8 h-8 text-white" />

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import services from '../../data/services';
+import { FaCode, FaPalette, FaMobile } from 'react-icons/fa';
+import { usePortfolioContext } from '../../context/PortfolioDataContext';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import Modal from '../ui/Modal';
@@ -12,7 +13,15 @@ import ElasticBounce from '../animations/ElasticBounce';
  * Services Section with flip cards and modal details
  */
 const Services = () => {
+  const { services: svcData } = usePortfolioContext();
   const [selectedService, setSelectedService] = useState(null);
+
+  // Map icon names from DB to React components
+  const iconMap = { FaCode, FaPalette, FaMobile };
+  const services = (svcData || []).map(svc => ({
+    ...svc,
+    icon: iconMap[svc.icon] || FaCode,
+  }));
 
   return (
     <section id="services" className="section-padding bg-light-card dark:bg-dark-card">
@@ -29,7 +38,7 @@ const Services = () => {
               WHAT I OFFER
             </span>
           </motion.div>
-          
+
           <div className="mb-6">
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display text-light-text dark:text-dark-text inline-block">
               <StaggerText type="chars" delay={0} duration={0.08}>
@@ -42,7 +51,7 @@ const Services = () => {
               </span>
             </h2>
           </div>
-          
+
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -50,7 +59,7 @@ const Services = () => {
             transition={{ delay: 2, duration: 0.6 }}
           >
             <p className="text-lg max-w-3xl mx-auto text-light-text-secondary dark:text-dark-text-secondary">
-              I&apos;m passionate about crafting experiences that merge innovation, aesthetics, 
+              I&apos;m passionate about crafting experiences that merge innovation, aesthetics,
               and functionality. Delivering solutions that drive results.
             </p>
           </motion.div>
@@ -59,9 +68,9 @@ const Services = () => {
         {/* Services Grid - Omio Numbered Style */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
-            <ElasticBounce 
-              key={service.id} 
-              direction="up" 
+            <ElasticBounce
+              key={service.id}
+              direction="up"
               delay={index * 0.15}
               intensity={1.2}
               className="pulse"
@@ -72,74 +81,74 @@ const Services = () => {
                   whileHover={{ y: -8 }}
                   transition={{ type: 'spring', stiffness: 300 }}
                 >
-                <Card className="h-full relative overflow-hidden bg-light-bg dark:bg-dark-bg border-2 border-transparent hover:border-primary-500/20 transition-all duration-300">
-                  {/* Gradient Background */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                  <Card className="h-full relative overflow-hidden bg-light-bg dark:bg-dark-bg border-2 border-transparent hover:border-primary-500/20 transition-all duration-300">
+                    {/* Gradient Background */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
-                  <div className="relative p-8">
-                    {/* Number Badge - Large Omio Style */}
-                    <div className="flex items-start justify-between mb-6">
-                      <motion.div
-                        className="text-7xl font-bold font-display text-transparent bg-clip-text bg-gradient-to-br from-primary-500/20 to-secondary-500/20 group-hover:from-primary-500 group-hover:to-secondary-500 transition-all duration-300"
-                        whileHover={{ scale: 1.1 }}
-                      >
-                        {service.number}
-                      </motion.div>
-                      
-                      {/* Icon */}
-                      <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg`}>
-                        <service.icon className="w-7 h-7 text-white" />
+                    <div className="relative p-8">
+                      {/* Number Badge - Large Omio Style */}
+                      <div className="flex items-start justify-between mb-6">
+                        <motion.div
+                          className="text-7xl font-bold font-display text-transparent bg-clip-text bg-gradient-to-br from-primary-500/20 to-secondary-500/20 group-hover:from-primary-500 group-hover:to-secondary-500 transition-all duration-300"
+                          whileHover={{ scale: 1.1 }}
+                        >
+                          {service.number}
+                        </motion.div>
+
+                        {/* Icon */}
+                        <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg`}>
+                          <service.icon className="w-7 h-7 text-white" />
+                        </div>
                       </div>
+
+                      {/* Title */}
+                      <h3 className="text-2xl font-bold font-display text-light-text dark:text-dark-text mb-4 tracking-wide uppercase">
+                        {service.title}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="text-light-text-secondary dark:text-dark-text-secondary mb-6 leading-relaxed">
+                        {service.description}
+                      </p>
+
+                      {/* Features Preview */}
+                      <ul className="space-y-2 mb-6">
+                        {service.features.slice(0, 4).map((feature, i) => (
+                          <motion.li
+                            key={i}
+                            className="flex items-start gap-2 text-sm text-light-text-secondary dark:text-dark-text-secondary"
+                            initial={{ opacity: 0, x: -10 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: index * 0.1 + i * 0.05 }}
+                          >
+                            <span className={`flex-shrink-0 w-1.5 h-1.5 rounded-full bg-gradient-to-r ${service.color} mt-2`}></span>
+                            <span>{feature}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
+
+                      {/* CTA Button */}
+                      <motion.button
+                        onClick={() => setSelectedService(service)}
+                        className="w-full py-3 rounded-lg bg-light-card dark:bg-dark-card hover:bg-primary-500 hover:text-white border-2 border-light-border dark:border-dark-border hover:border-primary-500 transition-all duration-300 font-semibold text-sm group/btn"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <span className="flex items-center justify-center gap-2">
+                          Learn More
+                          <svg className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                          </svg>
+                        </span>
+                      </motion.button>
                     </div>
 
-                    {/* Title */}
-                    <h3 className="text-2xl font-bold font-display text-light-text dark:text-dark-text mb-4 tracking-wide uppercase">
-                      {service.title}
-                    </h3>
-
-                    {/* Description */}
-                    <p className="text-light-text-secondary dark:text-dark-text-secondary mb-6 leading-relaxed">
-                      {service.description}
-                    </p>
-
-                    {/* Features Preview */}
-                    <ul className="space-y-2 mb-6">
-                      {service.features.slice(0, 4).map((feature, i) => (
-                        <motion.li
-                          key={i}
-                          className="flex items-start gap-2 text-sm text-light-text-secondary dark:text-dark-text-secondary"
-                          initial={{ opacity: 0, x: -10 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: index * 0.1 + i * 0.05 }}
-                        >
-                          <span className={`flex-shrink-0 w-1.5 h-1.5 rounded-full bg-gradient-to-r ${service.color} mt-2`}></span>
-                          <span>{feature}</span>
-                        </motion.li>
-                      ))}
-                    </ul>
-
-                    {/* CTA Button */}
-                    <motion.button
-                      onClick={() => setSelectedService(service)}
-                      className="w-full py-3 rounded-lg bg-light-card dark:bg-dark-card hover:bg-primary-500 hover:text-white border-2 border-light-border dark:border-dark-border hover:border-primary-500 transition-all duration-300 font-semibold text-sm group/btn"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <span className="flex items-center justify-center gap-2">
-                        Learn More
-                        <svg className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </span>
-                    </motion.button>
-                  </div>
-
-                  {/* Corner Accent */}
-                  <div className={`absolute -bottom-8 -right-8 w-32 h-32 bg-gradient-to-br ${service.color} opacity-5 group-hover:opacity-10 rounded-full blur-2xl transition-opacity duration-500`} />
-                </Card>
-              </motion.div>
-            </FadeIn>
+                    {/* Corner Accent */}
+                    <div className={`absolute -bottom-8 -right-8 w-32 h-32 bg-gradient-to-br ${service.color} opacity-5 group-hover:opacity-10 rounded-full blur-2xl transition-opacity duration-500`} />
+                  </Card>
+                </motion.div>
+              </FadeIn>
             </ElasticBounce>
           ))}
         </div>

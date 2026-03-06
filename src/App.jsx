@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from './context/ThemeContext';
+import { PortfolioDataProvider } from './context/PortfolioDataContext';
 import Layout from './components/layout/Layout';
 import SpinningLoader from './components/ui/SpinningLoader';
 import MagneticCursor from './components/ui/MagneticCursor';
@@ -39,19 +40,21 @@ function App() {
   return (
     <HelmetProvider>
       <ThemeProvider>
-        <MagneticCursor />
-        <Layout>
-          <Hero />
-          <About />
-          <TechStack />
-          <Experience />
-          <Services />
-          <WorkingProcess />
-          <Portfolio />
-          <WhyChoose />
-          <Testimonials />
-          <Contact />
-        </Layout>
+        <PortfolioDataProvider>
+          <MagneticCursor />
+          <Layout>
+            <Hero />
+            <About />
+            <TechStack />
+            <Experience />
+            <Services />
+            <WorkingProcess />
+            <Portfolio />
+            <WhyChoose />
+            <Testimonials />
+            <Contact />
+          </Layout>
+        </PortfolioDataProvider>
       </ThemeProvider>
     </HelmetProvider>
   );

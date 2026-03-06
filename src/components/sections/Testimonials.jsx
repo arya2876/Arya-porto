@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaStar, FaQuoteLeft, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import testimonials from '../../data/testimonials';
+import { usePortfolioContext } from '../../context/PortfolioDataContext';
 import Card from '../ui/Card';
 import FadeIn from '../animations/FadeIn';
 import BackgroundText from '../ui/BackgroundText';
@@ -13,6 +13,7 @@ import ElasticBounce from '../animations/ElasticBounce';
  * Testimonials Section with carousel
  */
 const Testimonials = () => {
+  const { testimonials } = usePortfolioContext();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [direction, setDirection] = useState(0);
@@ -71,7 +72,7 @@ const Testimonials = () => {
       <div className="container-custom">
         {/* Section Header */}
         <FadeIn className="text-center mb-16">
-          <ScrollGradientText 
+          <ScrollGradientText
             as="h2"
             className="text-4xl sm:text-5xl lg:text-6xl font-display mb-4 text-light-text dark:text-dark-text"
             scrollColor="#EC4899"
@@ -106,7 +107,7 @@ const Testimonials = () => {
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
             >
               {currentTestimonials.map((testimonial, index) => (
-                <ElasticBounce 
+                <ElasticBounce
                   key={testimonial.id}
                   direction="up"
                   delay={index * 0.1}
@@ -117,50 +118,50 @@ const Testimonials = () => {
                     className="relative h-full"
                     hover
                   >
-                  {/* Quote Icon */}
-                  <div className="absolute top-4 right-4 text-primary-500/20">
-                    <FaQuoteLeft className="w-12 h-12" />
-                  </div>
-
-                  {/* Rating */}
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <FaStar key={i} className="w-4 h-4 text-yellow-500" />
-                    ))}
-                  </div>
-
-                  {/* Testimonial Text */}
-                  <p className="text-light-text-secondary dark:text-dark-text-secondary mb-6 italic">
-                    "{testimonial.text}"
-                  </p>
-
-                  {/* Project Tag */}
-                  {testimonial.project && (
-                    <p className="text-sm text-primary-500 mb-4">
-                      Project: {testimonial.project}
-                    </p>
-                  )}
-
-                  {/* Author */}
-                  <div className="flex items-center gap-4 mt-auto pt-4 border-t border-light-border dark:border-dark-border">
-                    <img
-                      src={testimonial.avatar}
-                      alt={testimonial.name}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
-                    <div>
-                      <h4 className="font-semibold text-light-text dark:text-dark-text">
-                        {testimonial.name}
-                      </h4>
-                      <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary">
-                        {testimonial.role}
-                      </p>
-                      <p className="text-xs text-light-text-secondary dark:text-dark-text-secondary">
-                        {testimonial.company}
-                      </p>
+                    {/* Quote Icon */}
+                    <div className="absolute top-4 right-4 text-primary-500/20">
+                      <FaQuoteLeft className="w-12 h-12" />
                     </div>
-                  </div>
-                </Card>
+
+                    {/* Rating */}
+                    <div className="flex gap-1 mb-4">
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <FaStar key={i} className="w-4 h-4 text-yellow-500" />
+                      ))}
+                    </div>
+
+                    {/* Testimonial Text */}
+                    <p className="text-light-text-secondary dark:text-dark-text-secondary mb-6 italic">
+                      "{testimonial.text}"
+                    </p>
+
+                    {/* Project Tag */}
+                    {testimonial.project && (
+                      <p className="text-sm text-primary-500 mb-4">
+                        Project: {testimonial.project}
+                      </p>
+                    )}
+
+                    {/* Author */}
+                    <div className="flex items-center gap-4 mt-auto pt-4 border-t border-light-border dark:border-dark-border">
+                      <img
+                        src={testimonial.avatar}
+                        alt={testimonial.name}
+                        className="w-12 h-12 rounded-full object-cover"
+                      />
+                      <div>
+                        <h4 className="font-semibold text-light-text dark:text-dark-text">
+                          {testimonial.name}
+                        </h4>
+                        <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary">
+                          {testimonial.role}
+                        </p>
+                        <p className="text-xs text-light-text-secondary dark:text-dark-text-secondary">
+                          {testimonial.company}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
                 </ElasticBounce>
               ))}
             </motion.div>
@@ -195,11 +196,10 @@ const Testimonials = () => {
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`h-2 rounded-full transition-all ${
-                  index === currentIndex
+                className={`h-2 rounded-full transition-all ${index === currentIndex
                     ? 'bg-primary-500 w-8'
                     : 'bg-light-border dark:bg-dark-border w-2 hover:bg-primary-500/50'
-                }`}
+                  }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}
