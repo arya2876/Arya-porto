@@ -1,9 +1,10 @@
 /**
  * Admin Panel JavaScript
- * Portfolio Content Management System
+ * Portfolio CMS - Vercel + Supabase Edition
  */
-const API = '../api';
+const API = '/api';
 let currentSection = 'dashboard';
+let authToken = localStorage.getItem('adminToken') || null;
 
 // ===========================
 // Menu Configuration
@@ -21,24 +22,26 @@ const sections = [
 ];
 
 // ===========================
-// Auth
+// Auth (JWT)
 // ===========================
 async function doLogin() {
     const u = document.getElementById('loginUser').value;
     const p = document.getElementById('loginPass').value;
     try {
-        const r = await fetch(`${API}/auth.php?action=login`, {
+        const r = await fetch(`${API}/auth?action=login`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: u, password: p })
         });
         const d = await r.json();
         if (d.success) {
+            authToken = d.token;
+            localStorage.setItem('adminToken', authToken);
             document.getElementById('loginPage').classList.add('hidden');
             document.getElementById('appPage').classList.remove('hidden');
-            document.getElementById('adminName').textContent = d.user.display_name;
+            document.getElementById('adminName').textContent = d.user.name || d.user.username;
             buildNav(); loadSection('dashboard');
         } else { showLoginError(d.error || 'Login failed'); }
-    } catch (e) { showLoginError('Cannot connect to server. Is XAMPP running?'); }
+    } catch (e) { showLoginError('Cannot connect to server'); }
 }
 
 function showLoginError(msg) {
@@ -46,20 +49,27 @@ function showLoginError(msg) {
     el.textContent = msg; el.classList.remove('hidden');
 }
 
-async function doLogout() {
-    await fetch(`${API}/auth.php?action=logout`, { method: 'POST' });
+function doLogout() {
+    authToken = null;
+    localStorage.removeItem('adminToken');
     location.reload();
 }
 
 async function checkAuth() {
+    if (!authToken) return;
     try {
-        const r = await fetch(`${API}/auth.php?action=check`);
+        const r = await fetch(`${API}/auth?action=check`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
         const d = await r.json();
         if (d.authenticated) {
             document.getElementById('loginPage').classList.add('hidden');
             document.getElementById('appPage').classList.remove('hidden');
-            document.getElementById('adminName').textContent = d.user.display_name;
+            document.getElementById('adminName').textContent = d.user.name || d.user.username;
             buildNav(); loadSection('dashboard');
+        } else {
+            authToken = null;
+            localStorage.removeItem('adminToken');
         }
     } catch (e) { /* not logged in */ }
 }
@@ -88,12 +98,18 @@ function loadSection(id) {
 }
 
 // ===========================
-// API Helpers
+// API Helpers (JWT auth)
 // ===========================
 async function api(endpoint, method = 'GET', body = null) {
-    const opts = { method, headers: { 'Content-Type': 'application/json' } };
+    const opts = {
+        method,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+        }
+    };
     if (body) opts.body = JSON.stringify(body);
-    const r = await fetch(`${API}/endpoints/${endpoint}`, opts);
+    const r = await fetch(`${API}/${endpoint}`, opts);
     return r.json();
 }
 
@@ -139,17 +155,17 @@ async function loadDashboard() {
     content.innerHTML = '<p style="color:var(--text-muted)">Loading...</p>';
     try {
         const [info, skills, exp, proj, svc, test, cert] = await Promise.all([
-            api('personal-info.php?type=all'), api('skills.php'), api('experience.php'),
-            api('projects.php'), api('services.php'), api('testimonials.php'), api('certificates.php')
+            api('personal-info?type=all'), api('skills'), api('experience'),
+            api('projects'), api('services'), api('testimonials'), api('certificates')
         ]);
         content.innerHTML = `
       <div class="stats-grid">
-        <div class="stat-card"><div class="value">${skills.length || 0}</div><div class="label">Skills</div></div>
-        <div class="stat-card"><div class="value">${exp.length || 0}</div><div class="label">Experience</div></div>
-        <div class="stat-card"><div class="value">${proj.length || 0}</div><div class="label">Projects</div></div>
-        <div class="stat-card"><div class="value">${svc.length || 0}</div><div class="label">Services</div></div>
-        <div class="stat-card"><div class="value">${test.length || 0}</div><div class="label">Testimonials</div></div>
-        <div class="stat-card"><div class="value">${cert.length || 0}</div><div class="label">Certificates</div></div>
+        <div class="stat-card"><div class="value">${(skills || []).length || 0}</div><div class="label">Skills</div></div>
+        <div class="stat-card"><div class="value">${(exp || []).length || 0}</div><div class="label">Experience</div></div>
+        <div class="stat-card"><div class="value">${(proj || []).length || 0}</div><div class="label">Projects</div></div>
+        <div class="stat-card"><div class="value">${(svc || []).length || 0}</div><div class="label">Services</div></div>
+        <div class="stat-card"><div class="value">${(test || []).length || 0}</div><div class="label">Testimonials</div></div>
+        <div class="stat-card"><div class="value">${(cert || []).length || 0}</div><div class="label">Certificates</div></div>
       </div>
       <div class="card"><div class="card-header"><h2>Quick Actions</h2></div><div class="card-body">
         <div style="display:flex;flex-wrap:wrap;gap:12px">
@@ -165,7 +181,7 @@ async function loadDashboard() {
 async function loadPersonal() {
     const content = document.getElementById('content');
     try {
-        const data = await api('personal-info.php?type=all');
+        const data = await api('personal-info?type=all');
         const info = data.personalInfo || {};
         content.innerHTML = `
       <div class="card"><div class="card-header"><h2>Personal Information</h2><button class="btn btn-primary btn-sm" onclick="editPersonalInfo()">✏️ Edit</button></div>
@@ -186,7 +202,7 @@ async function loadPersonal() {
 }
 
 async function editPersonalInfo() {
-    const data = await api('personal-info.php');
+    const data = await api('personal-info');
     const roles = (data.roles || []).join(', ');
     const paragraphs = (data.about_paragraphs || []).join('\n\n');
     openModal('Edit Personal Info', `
@@ -213,7 +229,7 @@ async function savePersonalInfo() {
         location: getField('location'), status: getField('status'),
         about_paragraphs: getField('about_paragraphs').split('\n\n').filter(Boolean),
     };
-    await api('personal-info.php', 'PUT', body);
+    await api('personal-info', 'PUT', body);
     toast('Personal info updated!'); closeModal(); loadPersonal();
 }
 
@@ -227,11 +243,11 @@ async function editStat(s) {
 }
 async function saveStat(isUpdate = false) {
     const body = { value: parseInt(getField('value')), suffix: getField('suffix'), label: getField('label') };
-    if (isUpdate) { body.id = getField('id'); await api('personal-info.php?type=stats', 'PUT', body); }
-    else { await api('personal-info.php?type=stats', 'POST', body); }
+    if (isUpdate) { body.id = getField('id'); await api('personal-info?type=stats', 'PUT', body); }
+    else { await api('personal-info?type=stats', 'POST', body); }
     toast('Saved!'); closeModal(); loadPersonal();
 }
-async function deleteStat(id) { if (!confirm('Delete?')) return; await api(`personal-info.php?type=stats&id=${id}`, 'DELETE'); toast('Deleted'); loadPersonal(); }
+async function deleteStat(id) { if (!confirm('Delete?')) return; await api(`personal-info?type=stats&id=${id}`, 'DELETE'); toast('Deleted'); loadPersonal(); }
 async function addSocial() {
     openModal('Add Social Link', `${formField('Platform', 'platform')}${formField('URL', 'url')}`,
         `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveSocial()">Save</button>`);
@@ -242,16 +258,16 @@ async function editSocial(s) {
 }
 async function saveSocial(isUpdate = false) {
     const body = { platform: getField('platform'), url: getField('url') };
-    if (isUpdate) { body.id = getField('id'); await api('personal-info.php?type=social', 'PUT', body); }
-    else { await api('personal-info.php?type=social', 'POST', body); }
+    if (isUpdate) { body.id = getField('id'); await api('personal-info?type=social', 'PUT', body); }
+    else { await api('personal-info?type=social', 'POST', body); }
     toast('Saved!'); closeModal(); loadPersonal();
 }
-async function deleteSocial(id) { if (!confirm('Delete?')) return; await api(`personal-info.php?type=social&id=${id}`, 'DELETE'); toast('Deleted'); loadPersonal(); }
+async function deleteSocial(id) { if (!confirm('Delete?')) return; await api(`personal-info?type=social&id=${id}`, 'DELETE'); toast('Deleted'); loadPersonal(); }
 
 // ===========================
 // Generic CRUD Helpers
 // ===========================
-function renderCrudTable(items, columns, editFn, deleteFn, addLabel = '+ Add') {
+function renderCrudTable(items, columns, editFn, deleteFn) {
     if (!items.length) return `<div class="empty-state"><div class="icon">📭</div><p>No data yet</p></div>`;
     return `<div class="table-wrap"><table><thead><tr>${columns.map(c => `<th>${c.label}</th>`).join('')}<th>Actions</th></tr></thead>
     <tbody>${items.map(item => `<tr>${columns.map(c => `<td>${c.render ? c.render(item[c.key], item) : (item[c.key] || '-')}</td>`).join('')}
@@ -262,16 +278,14 @@ function renderCrudTable(items, columns, editFn, deleteFn, addLabel = '+ Add') {
 // Skills
 // ===========================
 async function loadSkills() {
-    const [skills, tech] = await Promise.all([api('skills.php'), api('skills.php?type=tech')]);
+    const skills = await api('skills');
     document.getElementById('content').innerHTML = `
     <div class="card"><div class="card-header"><h2>Skills</h2><button class="btn btn-primary btn-sm" onclick="addSkill()">+ Add Skill</button></div>
-      <div class="card-body">${renderCrudTable(skills, [
+      <div class="card-body">${renderCrudTable(skills || [], [
         { key: 'name', label: 'Skill' },
         { key: 'level', label: 'Level', render: v => `<div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--border);border-radius:3px"><div style="width:${v}%;height:100%;background:var(--accent);border-radius:3px"></div></div>${v}%</div>` },
         { key: 'category', label: 'Category', render: v => `<span class="tag">${v}</span>` }
-    ], 'editSkill', 'deleteSkill')}</div></div>
-    <div class="card"><div class="card-header"><h2>Tech Stack</h2><button class="btn btn-primary btn-sm" onclick="addTech()">+ Add</button></div>
-      <div class="card-body">${renderCrudTable(tech, [{ key: 'name', label: 'Technology' }], 'editTech', 'deleteTech')}</div></div>`;
+    ], 'editSkill', 'deleteSkill')}</div></div>`;
 }
 
 function skillForm(s = {}) {
@@ -284,28 +298,19 @@ function addSkill() { openModal('Add Skill', skillForm(), `<button class="btn bt
 function editSkill(s) { openModal('Edit Skill', skillForm(s), `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveSkill(true)">Save</button>`); }
 async function saveSkill(isUpdate = false) {
     const body = { name: getField('name'), level: parseInt(getField('level')), category: getField('category') };
-    if (isUpdate) { body.id = getField('id'); await api('skills.php', 'PUT', body); } else { await api('skills.php', 'POST', body); }
+    if (isUpdate) { body.id = getField('id'); await api('skills', 'PUT', body); } else { await api('skills', 'POST', body); }
     toast('Saved!'); closeModal(); loadSkills();
 }
-async function deleteSkill(id) { if (!confirm('Delete?')) return; await api(`skills.php?id=${id}`, 'DELETE'); toast('Deleted'); loadSkills(); }
-
-function addTech() { openModal('Add Tech', `${formField('Technology', 'name')}`, `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveTech()">Save</button>`); }
-function editTech(s) { openModal('Edit', `<input type="hidden" id="f_id" value="${s.id}">${formField('Technology', 'name', s.name)}`, `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveTech(true)">Save</button>`); }
-async function saveTech(u = false) {
-    const body = { name: getField('name') };
-    if (u) { body.id = getField('id'); await api('skills.php?type=tech', 'PUT', body); } else { await api('skills.php?type=tech', 'POST', body); }
-    toast('Saved!'); closeModal(); loadSkills();
-}
-async function deleteTech(id) { if (!confirm('Delete?')) return; await api(`skills.php?type=tech&id=${id}`, 'DELETE'); toast('Deleted'); loadSkills(); }
+async function deleteSkill(id) { if (!confirm('Delete?')) return; await api(`skills?id=${id}`, 'DELETE'); toast('Deleted'); loadSkills(); }
 
 // ===========================
 // Experience
 // ===========================
 async function loadExperience() {
-    const items = await api('experience.php');
+    const items = await api('experience');
     document.getElementById('content').innerHTML = `
     <div class="card"><div class="card-header"><h2>Experience Timeline</h2><button class="btn btn-primary btn-sm" onclick="addExp()">+ Add</button></div>
-      <div class="card-body">${renderCrudTable(items, [
+      <div class="card-body">${renderCrudTable(items || [], [
         { key: 'year', label: 'Year' },
         { key: 'title', label: 'Title' },
         { key: 'type', label: 'Type', render: v => `<span class="tag ${v === 'education' ? 'tag-warning' : 'tag-success'}">${v}</span>` },
@@ -318,7 +323,6 @@ function expForm(s = {}) {
     const techs = (s.technologies || []).join(', ');
     return `${s.id ? `<input type="hidden" id="f_id" value="${s.id}">` : ''}
     ${formField('Year', 'year', s.year)}${formField('Title', 'title', s.title)}
-    ${formField('Icon', 'icon', s.icon || '💼')}
     ${formField('Type', 'type', '', 'select', ['education', 'work', 'project'].map(t => `<option value="${t}" ${s.type === t ? 'selected' : ''}>${t}</option>`).join(''))}
     ${formField('Description', 'description', s.description, 'textarea')}
     ${formField('Achievements (one per line)', 'achievements', achs, 'textarea')}
@@ -329,23 +333,23 @@ function addExp() { openModal('Add Experience', expForm(), `<button class="btn b
 function editExp(s) { openModal('Edit Experience', expForm(s), `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveExp(true)">Save</button>`); }
 async function saveExp(u = false) {
     const body = {
-        year: getField('year'), title: getField('title'), icon: getField('icon'), type: getField('type'),
+        year: getField('year'), title: getField('title'), type: getField('type'),
         description: getField('description'), achievements: getField('achievements').split('\n').filter(Boolean),
         technologies: getField('technologies').split(',').map(s => s.trim()).filter(Boolean), is_current: getField('is_current')
     };
-    if (u) { body.id = getField('id'); await api('experience.php', 'PUT', body); } else { await api('experience.php', 'POST', body); }
+    if (u) { body.id = getField('id'); await api('experience', 'PUT', body); } else { await api('experience', 'POST', body); }
     toast('Saved!'); closeModal(); loadExperience();
 }
-async function deleteExp(id) { if (!confirm('Delete?')) return; await api(`experience.php?id=${id}`, 'DELETE'); toast('Deleted'); loadExperience(); }
+async function deleteExp(id) { if (!confirm('Delete?')) return; await api(`experience?id=${id}`, 'DELETE'); toast('Deleted'); loadExperience(); }
 
 // ===========================
 // Projects
 // ===========================
 async function loadProjects() {
-    const items = await api('projects.php');
+    const items = await api('projects');
     document.getElementById('content').innerHTML = `
     <div class="card"><div class="card-header"><h2>Projects</h2><button class="btn btn-primary btn-sm" onclick="addProject()">+ Add</button></div>
-      <div class="card-body">${renderCrudTable(items, [
+      <div class="card-body">${renderCrudTable(items || [], [
         { key: 'title', label: 'Title' },
         { key: 'category', label: 'Category', render: v => `<span class="tag">${v}</span>` },
         { key: 'year', label: 'Year' },
@@ -379,21 +383,21 @@ async function saveProject(u = false) {
         live_url: getField('live_url'), github_url: getField('github_url'),
         client: getField('client'), duration: getField('duration'), featured: getField('featured')
     };
-    if (u) { body.id = getField('id'); await api('projects.php', 'PUT', body); } else { await api('projects.php', 'POST', body); }
+    if (u) { body.id = getField('id'); await api('projects', 'PUT', body); } else { await api('projects', 'POST', body); }
     toast('Saved!'); closeModal(); loadProjects();
 }
-async function deleteProject(id) { if (!confirm('Delete?')) return; await api(`projects.php?id=${id}`, 'DELETE'); toast('Deleted'); loadProjects(); }
+async function deleteProject(id) { if (!confirm('Delete?')) return; await api(`projects?id=${id}`, 'DELETE'); toast('Deleted'); loadProjects(); }
 
 // ===========================
 // Services
 // ===========================
 async function loadServices() {
-    const items = await api('services.php');
+    const items = await api('services');
     document.getElementById('content').innerHTML = `
     <div class="card"><div class="card-header"><h2>Services</h2><button class="btn btn-primary btn-sm" onclick="addService()">+ Add</button></div>
-      <div class="card-body">${renderCrudTable(items, [
+      <div class="card-body">${renderCrudTable(items || [], [
         { key: 'number', label: '#' }, { key: 'title', label: 'Title' },
-        { key: 'pricing', label: 'Pricing' }, { key: 'featured', label: 'Featured', render: v => v ? '⭐' : '' }
+        { key: 'pricing', label: 'Pricing' }
     ], 'editService', 'deleteService')}</div></div>`;
 }
 
@@ -405,8 +409,7 @@ function serviceForm(s = {}) {
     ${formField('Title', 'title', s.title)}${formField('Description', 'description', s.description, 'textarea')}
     ${formField('Features (one per line)', 'features', feats, 'textarea')}
     ${formField('Technologies (comma separated)', 'technologies', techs)}
-    <div class="form-row">${formField('Pricing', 'pricing', s.pricing || 'Custom Quote')}${formField('Delivery Time', 'delivery_time', s.delivery_time || s.deliveryTime)}</div>
-    ${formField('Featured', 'featured', s.featured, 'checkbox')}`;
+    <div class="form-row">${formField('Pricing', 'pricing', s.pricing || 'Custom Quote')}${formField('Delivery Time', 'delivery_time', s.delivery_time)}</div>`;
 }
 function addService() { openModal('Add Service', serviceForm(), `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveService()">Save</button>`); }
 function editService(s) { openModal('Edit Service', serviceForm(s), `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveService(true)">Save</button>`); }
@@ -415,24 +418,23 @@ async function saveService(u = false) {
         number: getField('number'), icon: getField('icon'), title: getField('title'),
         description: getField('description'), features: getField('features').split('\n').filter(Boolean),
         technologies: getField('technologies').split(',').map(s => s.trim()).filter(Boolean),
-        pricing: getField('pricing'), delivery_time: getField('delivery_time'), featured: getField('featured')
+        pricing: getField('pricing'), delivery_time: getField('delivery_time')
     };
-    if (u) { body.id = getField('id'); await api('services.php', 'PUT', body); } else { await api('services.php', 'POST', body); }
+    if (u) { body.id = getField('id'); await api('services', 'PUT', body); } else { await api('services', 'POST', body); }
     toast('Saved!'); closeModal(); loadServices();
 }
-async function deleteService(id) { if (!confirm('Delete?')) return; await api(`services.php?id=${id}`, 'DELETE'); toast('Deleted'); loadServices(); }
+async function deleteService(id) { if (!confirm('Delete?')) return; await api(`services?id=${id}`, 'DELETE'); toast('Deleted'); loadServices(); }
 
 // ===========================
 // Testimonials
 // ===========================
 async function loadTestimonials() {
-    const items = await api('testimonials.php');
+    const items = await api('testimonials');
     document.getElementById('content').innerHTML = `
     <div class="card"><div class="card-header"><h2>Testimonials</h2><button class="btn btn-primary btn-sm" onclick="addTesti()">+ Add</button></div>
-      <div class="card-body">${renderCrudTable(items, [
+      <div class="card-body">${renderCrudTable(items || [], [
         { key: 'name', label: 'Name' }, { key: 'company', label: 'Company' },
-        { key: 'rating', label: 'Rating', render: v => '⭐'.repeat(v) },
-        { key: 'featured', label: 'Featured', render: v => v ? '✅' : '' }
+        { key: 'rating', label: 'Rating', render: v => '⭐'.repeat(v) }
     ], 'editTesti', 'deleteTesti')}</div></div>`;
 }
 
@@ -442,8 +444,7 @@ function testiForm(s = {}) {
     <div class="form-row">${formField('Company', 'company', s.company)}${formField('Avatar URL', 'avatar', s.avatar)}</div>
     ${formField('Rating (1-5)', 'rating', s.rating || 5, 'number')}
     ${formField('Testimonial Text', 'text', s.text, 'textarea')}
-    <div class="form-row">${formField('Project', 'project', s.project)}${formField('Date (YYYY-MM)', 'date', s.date)}</div>
-    ${formField('Featured', 'featured', s.featured, 'checkbox')}`;
+    ${formField('Project', 'project', s.project)}`;
 }
 function addTesti() { openModal('Add Testimonial', testiForm(), `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveTesti()">Save</button>`); }
 function editTesti(s) { openModal('Edit Testimonial', testiForm(s), `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveTesti(true)">Save</button>`); }
@@ -451,23 +452,23 @@ async function saveTesti(u = false) {
     const body = {
         name: getField('name'), role: getField('role'), company: getField('company'),
         avatar: getField('avatar'), rating: parseInt(getField('rating')), text: getField('text'),
-        project: getField('project'), date: getField('date'), featured: getField('featured')
+        project: getField('project')
     };
-    if (u) { body.id = getField('id'); await api('testimonials.php', 'PUT', body); } else { await api('testimonials.php', 'POST', body); }
+    if (u) { body.id = getField('id'); await api('testimonials', 'PUT', body); } else { await api('testimonials', 'POST', body); }
     toast('Saved!'); closeModal(); loadTestimonials();
 }
-async function deleteTesti(id) { if (!confirm('Delete?')) return; await api(`testimonials.php?id=${id}`, 'DELETE'); toast('Deleted'); loadTestimonials(); }
+async function deleteTesti(id) { if (!confirm('Delete?')) return; await api(`testimonials?id=${id}`, 'DELETE'); toast('Deleted'); loadTestimonials(); }
 
 // ===========================
 // Certificates
 // ===========================
 async function loadCertificates() {
-    const items = await api('certificates.php');
+    const items = await api('certificates');
     document.getElementById('content').innerHTML = `
     <div class="card"><div class="card-header"><h2>Certificates & Awards</h2><button class="btn btn-primary btn-sm" onclick="addCert()">+ Add</button></div>
-      <div class="card-body">${renderCrudTable(items, [
+      <div class="card-body">${renderCrudTable(items || [], [
         { key: 'title', label: 'Title' }, { key: 'issuer', label: 'Issuer' },
-        { key: 'issue_date', label: 'Date' },
+        { key: 'date', label: 'Date' },
         { key: 'category', label: 'Category', render: v => `<span class="tag">${v}</span>` }
     ], 'editCert', 'deleteCert')}</div></div>`;
 }
@@ -475,36 +476,32 @@ async function loadCertificates() {
 function certForm(s = {}) {
     return `${s.id ? `<input type="hidden" id="f_id" value="${s.id}">` : ''}
     ${formField('Title', 'title', s.title)}${formField('Issuer', 'issuer', s.issuer)}
-    <div class="form-row">${formField('Issue Date', 'issue_date', s.issue_date || s.issueDate, 'date')}${formField('Expiry Date (optional)', 'expiry_date', s.expiry_date || s.expiryDate, 'date')}</div>
-    <div class="form-row">${formField('Credential ID', 'credential_id', s.credential_id || s.credentialId)}${formField('Credential URL', 'credential_url', s.credential_url || s.credentialUrl)}</div>
+    <div class="form-row">${formField('Date', 'date', s.date)}${formField('Credential ID', 'credential_id', s.credential_id)}</div>
+    ${formField('Credential URL', 'credential_url', s.credential_url)}
     ${formField('Image URL', 'image', s.image)}
-    ${formField('Description', 'description', s.description, 'textarea')}
-    ${formField('Category', 'category', '', 'select', ['certification', 'award', 'achievement', 'course'].map(c => `<option value="${c}" ${(s.category || 'certification') === c ? 'selected' : ''}>${c}</option>`).join(''))}
-    ${formField('Featured', 'featured', s.featured, 'checkbox')}`;
+    ${formField('Category', 'category', '', 'select', ['certification', 'award', 'achievement', 'course'].map(c => `<option value="${c}" ${(s.category || 'certification') === c ? 'selected' : ''}>${c}</option>`).join(''))}`;
 }
 function addCert() { openModal('Add Certificate', certForm(), `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveCert()">Save</button>`); }
 function editCert(s) { openModal('Edit Certificate', certForm(s), `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveCert(true)">Save</button>`); }
 async function saveCert(u = false) {
     const body = {
-        title: getField('title'), issuer: getField('issuer'),
-        issue_date: getField('issue_date'), expiry_date: getField('expiry_date'),
+        title: getField('title'), issuer: getField('issuer'), date: getField('date'),
         credential_id: getField('credential_id'), credential_url: getField('credential_url'),
-        image: getField('image'), description: getField('description'),
-        category: getField('category'), featured: getField('featured')
+        image: getField('image'), category: getField('category')
     };
-    if (u) { body.id = getField('id'); await api('certificates.php', 'PUT', body); } else { await api('certificates.php', 'POST', body); }
+    if (u) { body.id = getField('id'); await api('certificates', 'PUT', body); } else { await api('certificates', 'POST', body); }
     toast('Saved!'); closeModal(); loadCertificates();
 }
-async function deleteCert(id) { if (!confirm('Delete?')) return; await api(`certificates.php?id=${id}`, 'DELETE'); toast('Deleted'); loadCertificates(); }
+async function deleteCert(id) { if (!confirm('Delete?')) return; await api(`certificates?id=${id}`, 'DELETE'); toast('Deleted'); loadCertificates(); }
 
 // ===========================
 // Working Process
 // ===========================
 async function loadWorkingProcess() {
-    const items = await api('working-process.php');
+    const items = await api('working-process');
     document.getElementById('content').innerHTML = `
     <div class="card"><div class="card-header"><h2>Working Process</h2><button class="btn btn-primary btn-sm" onclick="addWP()">+ Add</button></div>
-      <div class="card-body">${renderCrudTable(items, [
+      <div class="card-body">${renderCrudTable(items || [], [
         { key: 'number', label: '#' }, { key: 'title', label: 'Title' }, { key: 'icon', label: 'Icon' }
     ], 'editWP', 'deleteWP')}</div></div>`;
 }
@@ -523,10 +520,10 @@ async function saveWP(u = false) {
         number: getField('number'), icon: getField('icon'), title: getField('title'),
         description: getField('description'), features: getField('features').split('\n').filter(Boolean)
     };
-    if (u) { body.id = getField('id'); await api('working-process.php', 'PUT', body); } else { await api('working-process.php', 'POST', body); }
+    if (u) { body.id = getField('id'); await api('working-process', 'PUT', body); } else { await api('working-process', 'POST', body); }
     toast('Saved!'); closeModal(); loadWorkingProcess();
 }
-async function deleteWP(id) { if (!confirm('Delete?')) return; await api(`working-process.php?id=${id}`, 'DELETE'); toast('Deleted'); loadWorkingProcess(); }
+async function deleteWP(id) { if (!confirm('Delete?')) return; await api(`working-process?id=${id}`, 'DELETE'); toast('Deleted'); loadWorkingProcess(); }
 
 // ===========================
 // Init
