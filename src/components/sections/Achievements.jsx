@@ -2,20 +2,28 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaCertificate, FaExternalLinkAlt, FaTimes } from 'react-icons/fa';
 import { usePortfolioContext } from '../../context/PortfolioDataContext';
+import { achievementsFallback } from '../../data/achievements';
+import { navNum } from '../../data/navigation';
 import FadeIn from '../animations/FadeIn';
 import ScrollGradientText from '../ui/ScrollGradientText';
+import SectionHeading from '../ui/SectionHeading';
 
 /**
- * Certificates & Awards Section
+ * Achievements Section (06) - pengganti Testimonials.
+ * Menampilkan sertifikasi & penghargaan dari data certificates yang sudah ada
+ * (Supabase via context, dengan fallback statis).
  */
-const Certificates = () => {
+const Achievements = () => {
     const { certificates } = usePortfolioContext();
     const [selectedCert, setSelectedCert] = useState(null);
 
-    if (!certificates || certificates.length === 0) return null;
+    // Data dari API/Supabase bila ada; kalau kosong pakai fallback capaian
+    // nyata (Google Student Ambassador + slot sertifikat GCP/AWS) — section
+    // tidak pernah hilang dari halaman.
+    const items = certificates?.length ? certificates : achievementsFallback;
 
     return (
-        <section id="certificates" className="section-padding bg-light-bg dark:bg-dark-bg relative overflow-hidden">
+        <div className="section-padding relative overflow-hidden">
             {/* Background Pattern */}
             <div className="absolute inset-0">
                 <div className="absolute top-20 left-10 w-72 h-72 bg-primary-500/5 rounded-full blur-3xl" />
@@ -25,21 +33,22 @@ const Certificates = () => {
             <div className="container-custom relative z-10">
                 {/* Section Header */}
                 <FadeIn className="text-center mb-16">
+                    <SectionHeading num={navNum('achievements')} title="Achievements" />
                     <ScrollGradientText
                         as="h2"
                         className="text-4xl sm:text-5xl lg:text-6xl font-display mb-4 text-light-text dark:text-dark-text"
                         scrollColor="#F59E0B"
                     >
-                        CERTIFICATES & AWARDS
+                        ACHIEVEMENTS
                     </ScrollGradientText>
                     <p className="section-subtitle">
-                        Professional certifications and achievements
+                        Professional certifications, awards and recognitions
                     </p>
                 </FadeIn>
 
-                {/* Certificates Grid */}
+                {/* Achievements Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {certificates.map((cert, index) => (
+                    {items.map((cert, index) => (
                         <FadeIn key={cert.id || index} delay={index * 0.1}>
                             <motion.div
                                 className="group relative bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border overflow-hidden cursor-pointer"
@@ -100,7 +109,7 @@ const Certificates = () => {
                 </div>
             </div>
 
-            {/* Certificate Detail Modal */}
+            {/* Achievement Detail Modal */}
             <AnimatePresence>
                 {selectedCert && (
                     <motion.div
@@ -145,8 +154,8 @@ const Certificates = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </section>
+        </div>
     );
 };
 
-export default Certificates;
+export default Achievements;

@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { scrollToId } from '../../utils/smoothScroll';
+import { navNum } from '../../data/navigation';
+import SectionHeading from '../ui/SectionHeading';
 import { FaCode, FaPalette, FaMobile } from 'react-icons/fa';
 import { usePortfolioContext } from '../../context/PortfolioDataContext';
 import Card from '../ui/Card';
@@ -24,10 +27,11 @@ const Services = () => {
   }));
 
   return (
-    <section id="services" className="section-padding bg-light-card dark:bg-dark-card">
+    <div className="section-padding">
       <div className="container-custom">
         {/* Section Header - Omio Style */}
-        <div className="text-center mb-20">
+        <div data-reveal="up" className="text-center mb-20">
+          <SectionHeading num={navNum('services')} title="What I Do" />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -66,7 +70,7 @@ const Services = () => {
         </div>
 
         {/* Services Grid - Omio Numbered Style */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div data-reveal="up" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
             <ElasticBounce
               key={service.id}
@@ -153,8 +157,8 @@ const Services = () => {
           ))}
         </div>
 
-        {/* CTA */}
-        <FadeIn delay={0.6} className="text-center mt-16">
+        {/* CTA - target terakhir timeline pin */}
+        <div data-reveal="up" className="text-center mt-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -166,12 +170,12 @@ const Services = () => {
             <Button
               variant="gradient"
               size="lg"
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => scrollToId('contact')}
             >
               Get a Free Quote
             </Button>
           </motion.div>
-        </FadeIn>
+        </div>
       </div>
 
       {/* Service Detail Modal */}
@@ -255,7 +259,7 @@ const Services = () => {
                 fullWidth
                 onClick={() => {
                   setSelectedService(null);
-                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                  scrollToId('contact');
                 }}
               >
                 Get Started
@@ -270,7 +274,7 @@ const Services = () => {
           </div>
         )}
       </Modal>
-    </section>
+    </div>
   );
 };
 

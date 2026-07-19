@@ -5,6 +5,8 @@ import Card from '../ui/Card';
 import FadeIn from '../animations/FadeIn';
 import BackgroundText from '../ui/BackgroundText';
 import ScrollGradientText from '../ui/ScrollGradientText';
+import SectionHeading from '../ui/SectionHeading';
+import { navNum } from '../../data/navigation';
 import { usePortfolioContext } from '../../context/PortfolioDataContext';
 
 /**
@@ -65,10 +67,11 @@ const Experience = () => {
   };
 
   return (
-    <section id="experience" className="section-padding bg-light-card dark:bg-dark-card">
+    <div className="section-padding">
       <div className="container-custom">
         {/* Section Header */}
         <FadeIn className="text-center mb-16">
+          <SectionHeading num={navNum('experience')} title="Experience" />
           <ScrollGradientText
             as="h2"
             className="text-4xl sm:text-5xl lg:text-6xl font-display mb-4 text-light-text dark:text-dark-text"
@@ -187,7 +190,7 @@ const Experience = () => {
 
       {/* Large Background Text - Omio Style */}
       <BackgroundText text="EXPERIENCE" size="md" animate={true} />
-    </section>
+    </div>
   );
 };
 

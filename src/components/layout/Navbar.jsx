@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBars, FaTimes, FaGithub, FaLinkedin, FaInstagram, FaTiktok } from 'react-icons/fa';
 import { NAV_LINKS, APP_CONFIG } from '../../utils/constants';
+import { scrollToId } from '../../utils/smoothScroll';
 import ThemeToggle from '../ui/ThemeToggle';
 import ExpandableLogo from '../ui/ExpandableLogo';
 import useScrollAnimation from '../../hooks/useScrollAnimation';
@@ -86,19 +87,8 @@ const Navbar = () => {
     e.preventDefault();
     setIsOpen(false);
 
-    const targetId = href.replace('#', '');
-    const element = document.getElementById(targetId);
-    
-    if (element) {
-      const offset = 80; // Navbar height
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
-    }
+    // Offset -80 keeps the section clear of the fixed navbar
+    scrollToId(href.replace('#', ''), { offset: -80 });
   };
 
   return (

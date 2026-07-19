@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { FaPaperPlane } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import emailjs from '@emailjs/browser';
-import { EMAILJS_CONFIG } from '../../utils/constants';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import FadeIn from '../animations/FadeIn';
 import ScrollGradientText from '../ui/ScrollGradientText';
+import SectionHeading from '../ui/SectionHeading';
+import { navNum } from '../../data/navigation';
 import Lanyard from '../ui/Lanyard';
 
 /**
@@ -20,6 +20,7 @@ const Contact = () => {
     projectType: '',
     subject: '',
     message: '',
+    website: '', // honeypot anti-bot, tidak pernah tampil ke user
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
@@ -76,19 +77,24 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      // Using EmailJS to send email
-      await emailjs.send(
-        EMAILJS_CONFIG.serviceId,
-        EMAILJS_CONFIG.templateId,
-        {
-          from_name: formData.name,
-          from_email: formData.email,
-          project_type: formData.projectType,
+      // Simpan ke Supabase (tabel contact_messages) lewat serverless API —
+      // validasi + honeypot + rate limit dilakukan di server (api/contact.js).
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          projectType: formData.projectType,
           subject: formData.subject,
           message: formData.message,
-        },
-        EMAILJS_CONFIG.publicKey
-      );
+          website: formData.website || '', // honeypot — manusia tidak mengisinya
+        }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(body.error || 'Failed to send message');
+      }
 
       toast.success('Message sent successfully! I\'ll get back to you soon.');
       
@@ -109,11 +115,12 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="section-padding bg-light-card dark:bg-dark-card">
+    <div className="section-padding">
       <div className="container-custom">
         {/* Section Header */}
         <FadeIn className="text-center mb-16">
-          <ScrollGradientText 
+          <SectionHeading num={navNum('contact')} title="Contact" />
+          <ScrollGradientText
             as="h2"
             className="text-4xl sm:text-5xl lg:text-6xl font-display mb-4 text-light-text dark:text-dark-text"
             scrollColor="#10B981"
@@ -143,6 +150,17 @@ const Contact = () => {
                 </h3>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Honeypot anti-bot: tersembunyi dari manusia, diisi bot */}
+                  <input
+                    type="text"
+                    name="website"
+                    value={formData.website}
+                    onChange={handleChange}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    style={{ position: 'absolute', left: '-9999px', height: 0, width: 0, opacity: 0 }}
+                  />
                   {/* Name */}
                   <div>
                     <label
@@ -287,7 +305,7 @@ const Contact = () => {
         draggable
         theme="colored"
       />
-    </section>
+    </div>
   );
 };
 

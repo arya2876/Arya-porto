@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { scrollToId, scrollToTop as smoothScrollToTop } from '../utils/smoothScroll';
 
 /**
  * Custom hook for scroll-based animations
@@ -57,26 +58,14 @@ export const useScrollAnimation = () => {
    * @param {number} offset - Offset from the top (default: 80)
    */
   const scrollToElement = useCallback((elementId, offset = 80) => {
-    const element = document.getElementById(elementId);
-    if (element) {
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
-    }
+    scrollToId(elementId, { offset: -offset });
   }, []);
 
   /**
    * Scroll to top of the page
    */
   const scrollToTop = useCallback(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
+    smoothScrollToTop();
   }, []);
 
   /**

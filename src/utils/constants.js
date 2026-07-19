@@ -1,4 +1,6 @@
 // App constants and configuration for Arya Winata
+import { NAV_ITEMS } from '../data/navigation';
+
 export const APP_CONFIG = {
   name: 'Arya Winata Portfolio',
   author: 'Arya Winata',
@@ -14,16 +16,12 @@ export const APP_CONFIG = {
   resumeUrl: '/resume.pdf',
 };
 
-// Navigation links
-export const NAV_LINKS = [
-  { name: 'Home', href: '#home' },
-  { name: 'About', href: '#about' },
-  { name: 'Experience', href: '#experience' },
-  { name: 'Services', href: '#services' },
-  { name: 'Portfolio', href: '#portfolio' },
-  { name: 'Testimonials', href: '#testimonials' },
-  { name: 'Contact', href: '#contact' },
-];
+// Navigation links — diturunkan dari single source of truth
+// src/data/navigation.js; jangan tambah link manual di sini.
+export const NAV_LINKS = NAV_ITEMS.map((item) => ({
+  name: item.label,
+  href: `#${item.id}`,
+}));
 
 // Animation variants for Framer Motion
 export const FADE_IN_VARIANTS = {
@@ -99,11 +97,11 @@ export const STAGGER_ITEM_VARIANTS = {
   }
 };
 
-// Hero statistics for Arya Winata
+// Hero statistics — angka jujur skala mahasiswa
 export const HERO_STATS = [
-  { value: 15, suffix: '+', label: 'Projects Completed' },
-  { value: 3, suffix: '+', label: 'Years Experience' },
-  { value: 50, suffix: '+', label: 'Happy Clients' },
+  { value: 10, suffix: '+', label: 'Projects Built' },
+  { value: 2, suffix: '+', label: 'Years Learning & Building' },
+  { value: 3, suffix: '+', label: 'Real Products Shipped' },
 ];
 
 // Skills data
@@ -169,7 +167,7 @@ export const SEO_CONFIG = {
   title: 'Arya Winata - Web Developer & UI/UX Designer',
   description: 'Portfolio website of Arya Winata showcasing modern web development, UI/UX design, and mobile responsive projects.',
   keywords: 'portfolio, web developer, designer, react, vue.js, javascript, frontend, UI/UX, Arya Winata',
-  ogImage: '/images/gambar1.png',
+  ogImage: '/images/gambar1.webp',
   twitterHandle: '@aryawinata',
 };
 

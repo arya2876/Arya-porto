@@ -6,7 +6,7 @@
 export const getProfileImage = () => {
   try {
     // Try to load from public folder
-    return '/images/gambar1.png';
+    return '/images/gambar1.webp';
   } catch (error) {
     console.error('Error loading profile image:', error);
     return 'https://via.placeholder.com/150';

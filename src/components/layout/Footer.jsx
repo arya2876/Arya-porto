@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaInstagram, FaTiktok, FaHeart, FaArrowUp } from 'react-icons/fa';
 import { APP_CONFIG, NAV_LINKS } from '../../utils/constants';
+import { scrollToId } from '../../utils/smoothScroll';
 import useScrollAnimation from '../../hooks/useScrollAnimation';
 import { usePortfolioContext } from '../../context/PortfolioDataContext';
 
@@ -29,23 +30,11 @@ const Footer = () => {
 
   const handleLinkClick = (e, href) => {
     e.preventDefault();
-    const targetId = href.replace('#', '');
-    const element = document.getElementById(targetId);
-
-    if (element) {
-      const offset = 80;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
-    }
+    scrollToId(href.replace('#', ''), { offset: -80 });
   };
 
   return (
-    <footer className="relative bg-light-card dark:bg-dark-card border-t border-light-border dark:border-dark-border overflow-hidden">
+    <footer className="relative border-t border-light-border dark:border-dark-border overflow-hidden">
       {/* Large Transparent Background Text - Omio Style */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
         <motion.div

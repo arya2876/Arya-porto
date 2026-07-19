@@ -5,7 +5,7 @@ export const personalInfo = {
   primaryRole: "Full Stack Developer",
   tagline: "Passionate about creating innovative web solutions",
   description: "Saya seorang developer yang passionate dalam menciptakan solusi web yang inovatif. Mari berkolaborasi untuk mewujudkan ide-ide kreatif menjadi kenyataan digital yang menakjubkan!",
-  profileImage: "/images/gambar1.png",
+  profileImage: "/images/gambar1.webp",
   profileImageFallback: "https://api.dicebear.com/7.x/initials/svg?seed=AW&backgroundColor=0891b2", // Avatar fallback
   status: "Available for projects",
   email: "arya@example.com", // Update with your email
@@ -13,11 +13,19 @@ export const personalInfo = {
   location: "Indonesia",
 };
 
-// Statistics
+// Statistics — angka jujur skala mahasiswa (bukan klaim agensi)
 export const statistics = [
-  { value: 15, suffix: '+', label: 'Projects Completed' },
-  { value: 3, suffix: '+', label: 'Years Experience' },
-  { value: 50, suffix: '+', label: 'Happy Clients' },
+  { value: 10, suffix: '+', label: 'Projects Built' },
+  { value: 2, suffix: '+', label: 'Years Learning & Building' },
+  { value: 3, suffix: '+', label: 'Real Products Shipped' },
+];
+
+// Tech-stack per kategori (dipakai About > Skills & Expertise, tanpa persentase)
+export const skillGroups = [
+  { title: 'Frontend', skills: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'GSAP'] },
+  { title: 'Backend & Data', skills: ['Supabase (PostgreSQL)', 'Sanity.io', 'Node.js'] },
+  { title: 'Design & Tools', skills: ['Figma', 'UI/UX', 'Git'] },
+  { title: 'Eksplorasi', skills: ['Google Cloud (Gemini)', 'AWS (dasar)'] },
 ];
 
 // Social Media Links

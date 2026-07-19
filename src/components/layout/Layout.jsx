@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import Navbar from './Navbar';
+import NavMenu from './NavMenu';
 import Footer from './Footer';
+import LineBackground from '../ui/LineBackground';
 
 /**
  * Layout Component - Wraps all pages with navbar and footer
@@ -8,13 +9,14 @@ import Footer from './Footer';
 const Layout = ({ children }) => {
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
-      
+      <LineBackground />
+      <NavMenu />
+
       <motion.main
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="flex-grow pt-20"
+        className="flex-grow"
       >
         {children}
       </motion.main>

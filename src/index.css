@@ -2,8 +2,18 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-/* Import custom components */
-@import './components/ui/MagneticCursor.css';
+/* Respect users who prefer reduced motion: collapse all CSS animations and
+   transitions site-wide (JS-driven effects check the same media query). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
 /* Custom scrollbar */
 @layer base {

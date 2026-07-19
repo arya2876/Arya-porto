@@ -67,35 +67,61 @@ const ProjectCard3D = ({ projects = [], autoRotate = true, rotationSpeed = 3500 
                 className="flex-shrink-0 w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] mr-6"
               >
                 <div
-                  className="relative h-[400px] rounded-2xl overflow-hidden border-2 border-primary-500/40 dark:border-primary-400/40 backdrop-blur-md shadow-2xl cursor-pointer group transition-colors duration-300 hover:border-primary-500 dark:hover:border-primary-400"
+                  className="relative h-[400px] rounded-2xl overflow-hidden border-2 border-primary-500/40 dark:border-primary-400/40 backdrop-blur-md shadow-2xl cursor-pointer group transition-all duration-300 hover:border-primary-500 dark:hover:border-primary-400 hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)]"
                   onClick={() => handleCardClick(project)}
+                  style={{ '--accent': project.accentColor || '#a3e635' }}
                 >
                   {/* Gradient Background Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-br from-primary-500/30 via-secondary-500/30 to-primary-600/40 dark:from-primary-400/40 dark:via-secondary-400/40 dark:to-primary-500/50 pointer-events-none" />
-                  
-                  {/* Image */}
+
+                  {/* Image - base/hover crossfade (pure CSS via group-hover) */}
                   {project.image ? (
-                    <SlidingMask 
-                      direction="right" 
+                    <SlidingMask
+                      direction="right"
                       delay={index * 0.1}
                       duration={1.2}
                       className="w-full h-full overflow-hidden"
                     >
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          if (e.target.nextSibling) {
-                            e.target.nextSibling.style.display = 'flex';
-                          }
-                        }}
-                      />
+                      <div className="relative w-full h-full">
+                        {/* Base layer: fades out on hover only when a hover image exists */}
+                        <img
+                          src={project.image}
+                          alt={project.title}
+                          loading={index === 0 ? 'eager' : 'lazy'}
+                          className={`absolute inset-0 w-full h-full object-cover transition-[transform,opacity] duration-500 group-hover:scale-[1.03] motion-reduce:transition-none ${
+                            project.hoverImage ? 'group-hover:opacity-0' : ''
+                          }`}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            if (e.target.nextSibling) {
+                              e.target.nextSibling.style.display = 'flex';
+                            }
+                          }}
+                        />
+                        {/* Hover layer: crossfades in on top of the base image */}
+                        {project.hoverImage && (
+                          <img
+                            src={project.hoverImage}
+                            alt=""
+                            aria-hidden="true"
+                            loading="lazy"
+                            draggable={false}
+                            className="absolute inset-0 w-full h-full object-cover opacity-0 transition-[transform,opacity] duration-500 group-hover:opacity-100 group-hover:scale-[1.03] motion-reduce:transition-none pointer-events-none"
+                          />
+                        )}
+                        {/* Accent color wash (grey-fade / lime-fade a la Lando) */}
+                        <div
+                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 motion-reduce:transition-none pointer-events-none mix-blend-overlay"
+                          style={{
+                            background:
+                              'linear-gradient(to top, var(--accent) 0%, transparent 60%)',
+                          }}
+                        />
+                      </div>
                     </SlidingMask>
                   ) : (
                     <div className="w-full h-full">
-                      <ProjectPlaceholder 
+                      <ProjectPlaceholder
                         variant={project.placeholderVariant || 'code'}
                         size="full"
                       />
@@ -359,6 +385,8 @@ ProjectCard3D.propTypes = {
       description: PropTypes.string,
       fullDescription: PropTypes.string,
       image: PropTypes.string,
+      hoverImage: PropTypes.string,
+      accentColor: PropTypes.string,
       placeholderVariant: PropTypes.oneOf(['code', 'web', 'mobile', 'design']),
       tags: PropTypes.arrayOf(PropTypes.string),
       technologies: PropTypes.arrayOf(PropTypes.string),
