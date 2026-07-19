@@ -1,28 +1,57 @@
 import { motion } from 'framer-motion';
 import Card from '../ui/Card';
 import SkillChips from '../ui/SkillChips';
-import { skillGroups } from '../../data/personalInfo';
 import SlideIn from '../animations/SlideIn';
 import ScrollGradientText from '../ui/ScrollGradientText';
 import SectionHeading from '../ui/SectionHeading';
 import { navNum } from '../../data/navigation';
 import StaggerText from '../animations/StaggerText';
 import GlassmorphismSlide from '../animations/GlassmorphismSlide';
+import { usePortfolioContext } from '../../context/PortfolioDataContext';
+import { skillGroups as staticSkillGroups } from '../../data/personalInfo';
 
 /**
- * About Section with journey, skills, and tech stack
+ * About Section — data dari Supabase (personalInfo.about_paragraphs + skills)
+ * Fallback ke teks statis jika database kosong.
  */
 const About = () => {
+  const { personalInfo, aboutJourney, skills } = usePortfolioContext();
+
+  // Bio paragraphs: dari DB (about_paragraphs) atau fallback statis
+  const paragraphs = aboutJourney?.paragraphs?.length
+    ? aboutJourney.paragraphs
+    : [
+        'Saya mahasiswa Sistem Informasi di UDINUS Semarang yang fokus pada full-stack web development dan UI/UX. Saya belajar dengan cara membangun produk nyata — dari sistem billing rental PlayStation sampai platform rental antar-mahasiswa.',
+        'Berangkat dari Jepara, saya punya ketertarikan kuat pada transformasi digital untuk UMKM daerah: membawa layanan web modern ke bisnis yang belum tersentuh teknologi. Saya juga aktif sebagai Google Student Ambassador di kampus.',
+        'Pendekatan saya sederhana: bangun bertahap dan iteratif, dengan arsitektur yang benar sejak awal — supaya produk mudah tumbuh tanpa harus ditulis ulang.',
+      ];
+
+  // Skills: dari DB (skills per kategori) atau fallback statis
+  // Konversi dari flat array [{name, level, category}] ke [{title, skills:[]}]
+  const skillGroupsFromDB = skills?.length
+    ? Object.entries(
+        skills.reduce((acc, s) => {
+          const cat = s.category || 'other';
+          if (!acc[cat]) acc[cat] = [];
+          acc[cat].push(s.name);
+          return acc;
+        }, {})
+      ).map(([cat, items]) => ({
+        title: cat.charAt(0).toUpperCase() + cat.slice(1),
+        skills: items,
+      }))
+    : null;
+
+  const skillGroups = skillGroupsFromDB || staticSkillGroups;
+
   return (
-    // Root <section id="about"> ada di App.jsx; komponen ini murni konten
-    // dengan tinggi natural (tanpa h-screen/sticky).
     <div className="section-padding relative overflow-hidden">
       {/* Decorative Elements */}
       <div className="absolute top-20 right-20 w-72 h-72 bg-primary-500/10 rounded-full blur-3xl" />
       <div className="absolute bottom-20 left-20 w-96 h-96 bg-secondary-500/10 rounded-full blur-3xl" />
 
       <div className="container-custom relative z-10">
-        {/* Section Header - target timeline pin via data-reveal */}
+        {/* Section Header */}
         <div className="text-center mb-20">
           <div data-reveal="up" className="flex flex-col items-center">
             <SectionHeading num={navNum('about')} title="About" />
@@ -45,8 +74,8 @@ const About = () => {
           </div>
           <div data-reveal="up">
             <p className="text-lg max-w-3xl mx-auto text-light-text-secondary dark:text-dark-text-secondary">
-              A passionate digital creator combining creativity, strategic thinking,
-              and technical excellence to bring visions into reality.
+              {personalInfo?.description ||
+                'A passionate digital creator combining creativity, strategic thinking, and technical excellence to bring visions into reality.'}
             </p>
           </div>
         </div>
@@ -60,23 +89,9 @@ const About = () => {
                   My Journey
                 </h3>
                 <div className="space-y-4 text-light-text-secondary dark:text-dark-text-secondary">
-                  <p>
-                    Saya mahasiswa Sistem Informasi di UDINUS Semarang yang fokus pada
-                    full-stack web development dan UI/UX. Saya belajar dengan cara
-                    membangun produk nyata — dari sistem billing rental PlayStation
-                    sampai platform rental antar-mahasiswa.
-                  </p>
-                  <p>
-                    Berangkat dari Jepara, saya punya ketertarikan kuat pada transformasi
-                    digital untuk UMKM daerah: membawa layanan web modern ke bisnis yang
-                    belum tersentuh teknologi. Saya juga aktif sebagai Google Student
-                    Ambassador di kampus.
-                  </p>
-                  <p>
-                    Pendekatan saya sederhana: bangun bertahap dan iteratif, dengan
-                    arsitektur yang benar sejak awal — supaya produk mudah tumbuh tanpa
-                    harus ditulis ulang.
-                  </p>
+                  {paragraphs.map((para, i) => (
+                    <p key={i}>{para}</p>
+                  ))}
                 </div>
               </Card>
             </SlideIn>
@@ -87,9 +102,8 @@ const About = () => {
             <SlideIn direction="right">
               <Card className="h-full">
                 <h3 className="text-2xl font-bold font-display mb-6 text-gradient">
-                  Skills & Expertise
+                  Skills &amp; Expertise
                 </h3>
-                {/* Chip per kategori, tanpa persentase (lebih jujur & terbaca) */}
                 <SkillChips groups={skillGroups} />
               </Card>
             </SlideIn>

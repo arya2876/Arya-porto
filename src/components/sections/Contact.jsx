@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaPaperPlane } from 'react-icons/fa';
+import { FaPaperPlane, FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Card from '../ui/Card';
@@ -9,11 +9,17 @@ import ScrollGradientText from '../ui/ScrollGradientText';
 import SectionHeading from '../ui/SectionHeading';
 import { navNum } from '../../data/navigation';
 import Lanyard from '../ui/Lanyard';
+import { usePortfolioContext } from '../../context/PortfolioDataContext';
 
 /**
  * Contact Section with form and contact information
+ * Email, phone, location dari Supabase (personal_info table)
  */
 const Contact = () => {
+  const { personalInfo } = usePortfolioContext();
+  const contactEmail = personalInfo?.email || 'arya@example.com';
+  const contactPhone = personalInfo?.phone || '';
+  const contactLocation = personalInfo?.location || 'Indonesia';
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -138,6 +144,48 @@ const Contact = () => {
             {/* Lanyard Card */}
             <FadeIn direction="left">
               <Lanyard />
+            </FadeIn>
+
+            {/* Contact Details from DB */}
+            <FadeIn direction="left" delay={0.2}>
+              <div className="space-y-3">
+                {contactEmail && (
+                  <a
+                    href={`mailto:${contactEmail}`}
+                    className="flex items-center gap-3 p-4 rounded-xl bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border hover:border-primary-500/50 transition-all group"
+                  >
+                    <div className="p-2 rounded-lg bg-primary-500/10 text-primary-500 group-hover:bg-primary-500 group-hover:text-white transition-all">
+                      <FaEnvelope className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm text-light-text dark:text-dark-text group-hover:text-primary-500 transition-colors">
+                      {contactEmail}
+                    </span>
+                  </a>
+                )}
+                {contactPhone && (
+                  <a
+                    href={`tel:${contactPhone}`}
+                    className="flex items-center gap-3 p-4 rounded-xl bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border hover:border-secondary-500/50 transition-all group"
+                  >
+                    <div className="p-2 rounded-lg bg-secondary-500/10 text-secondary-500 group-hover:bg-secondary-500 group-hover:text-white transition-all">
+                      <FaPhone className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm text-light-text dark:text-dark-text">
+                      {contactPhone}
+                    </span>
+                  </a>
+                )}
+                {contactLocation && (
+                  <div className="flex items-center gap-3 p-4 rounded-xl bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border">
+                    <div className="p-2 rounded-lg bg-yellow-500/10 text-yellow-500">
+                      <FaMapMarkerAlt className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm text-light-text dark:text-dark-text">
+                      {contactLocation}
+                    </span>
+                  </div>
+                )}
+              </div>
             </FadeIn>
           </div>
 
