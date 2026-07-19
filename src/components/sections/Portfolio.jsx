@@ -20,28 +20,10 @@ import ProjectPlaceholder from '../ui/ProjectPlaceholder';
 const Portfolio = () => {
   const { projects, portfolioCategories: PORTFOLIO_CATEGORIES } = usePortfolioContext();
   const [activeCategory, setActiveCategory] = useState('all');
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const filteredProjects = activeCategory === 'all'
     ? projects
     : projects.filter((p) => p.category === activeCategory);
-
-  const nextImage = () => {
-    if (selectedProject?.images) {
-      setCurrentImageIndex((prev) =>
-        prev === selectedProject.images.length - 1 ? 0 : prev + 1
-      );
-    }
-  };
-
-  const prevImage = () => {
-    if (selectedProject?.images) {
-      setCurrentImageIndex((prev) =>
-        prev === 0 ? selectedProject.images.length - 1 : prev - 1
-      );
-    }
-  };
 
   return (
     // Root <section id="portfolio"> ada di App.jsx; tinggi natural.
@@ -141,140 +123,13 @@ const Portfolio = () => {
                 client: project.client,
                 duration: project.duration,
                 category: project.category,
+                featured: project.featured,
               }))}
               autoRotate={false}
             />
           </div>
         </ScrollReveal>
       </div>
-
-      {/* Project Detail Modal */}
-      <Modal
-        isOpen={!!selectedProject}
-        onClose={() => setSelectedProject(null)}
-        size="xl"
-      >
-        {selectedProject && (
-          <div className="space-y-6">
-            {/* Image Carousel */}
-            {selectedProject.images && selectedProject.images.length > 0 && (
-              <div className="relative h-96 rounded-xl overflow-hidden bg-light-bg dark:bg-dark-bg">
-                {selectedProject.images[currentImageIndex] ? (
-                  <img
-                    src={selectedProject.images[currentImageIndex]}
-                    alt={`${selectedProject.title} - Image ${currentImageIndex + 1}`}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'block';
-                    }}
-                  />
-                ) : null}
-
-                {/* Placeholder jika image tidak tersedia */}
-                <div className={selectedProject.images[currentImageIndex] ? 'hidden' : 'block h-full'}>
-                  <ProjectPlaceholder
-                    variant={selectedProject.placeholderVariant || 'code'}
-                    size="full"
-                  />
-                </div>
-
-                {selectedProject.images.length > 1 && (
-                  <>
-                    <button
-                      onClick={prevImage}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
-                    >
-                      <FaChevronLeft className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={nextImage}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
-                    >
-                      <FaChevronRight className="w-5 h-5" />
-                    </button>
-
-                    {/* Dots */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                      {selectedProject.images.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setCurrentImageIndex(index)}
-                          className={`w-2 h-2 rounded-full transition-all ${index === currentImageIndex
-                              ? 'bg-white w-8'
-                              : 'bg-white/50'
-                            }`}
-                        />
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* Project Info */}
-            <div>
-              <h3 className="text-3xl font-bold font-display text-gradient mb-2">
-                {selectedProject.title}
-              </h3>
-              <div className="flex flex-wrap gap-4 text-sm text-light-text-secondary dark:text-dark-text-secondary mb-4">
-                {selectedProject.client && <span>Client: {selectedProject.client}</span>}
-                {selectedProject.year && <span>Year: {selectedProject.year}</span>}
-                {selectedProject.duration && <span>Duration: {selectedProject.duration}</span>}
-              </div>
-            </div>
-
-            {/* Description */}
-            <div>
-              <h4 className="text-lg font-semibold text-light-text dark:text-dark-text mb-3">
-                About the Project
-              </h4>
-              <p className="text-light-text-secondary dark:text-dark-text-secondary">
-                {selectedProject.fullDescription || selectedProject.description}
-              </p>
-            </div>
-
-            {/* Technologies */}
-            <div>
-              <h4 className="text-lg font-semibold text-light-text dark:text-dark-text mb-3">
-                Technologies Used
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {selectedProject.technologies.map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-4 py-2 rounded-full bg-primary-500/10 text-primary-500 border border-primary-500/20 text-sm font-medium"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex gap-4">
-              {selectedProject.liveUrl && (
-                <Button
-                  variant="gradient"
-                  icon={FaExternalLinkAlt}
-                  onClick={() => window.open(selectedProject.liveUrl, '_blank')}
-                >
-                  View Live Site
-                </Button>
-              )}
-              {selectedProject.githubUrl && (
-                <Button
-                  variant="outline"
-                  icon={FaGithub}
-                  onClick={() => window.open(selectedProject.githubUrl, '_blank')}
-                >
-                  View Code
-                </Button>
-              )}
-            </div>
-          </div>
-        )}
-      </Modal>
 
       {/* Large Background Text - Omio Style */}
       <BackgroundText text="PORTFOLIO" size="lg" animate={true} />

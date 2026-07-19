@@ -131,6 +131,15 @@ const ProjectCard3D = ({ projects = [], autoRotate = true, rotationSpeed = 3500 
                   {/* Glassmorphism Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-dark-bg/95 via-dark-bg/70 to-transparent dark:from-dark-bg/98 dark:via-dark-bg/75 pointer-events-none" />
 
+                  {/* Featured Badge */}
+                  {project.featured && (
+                    <div className="absolute top-4 left-4 z-10">
+                      <span className="px-3 py-1 text-xs font-bold rounded-full bg-yellow-400 text-black shadow-[0_0_15px_rgba(250,204,21,0.5)] tracking-wider">
+                        FEATURED
+                      </span>
+                    </div>
+                  )}
+
                   {/* Content */}
                   <div className="absolute bottom-0 left-0 right-0 p-6 pointer-events-none">
                     <h3 className="text-xl font-bold mb-2 text-white drop-shadow-lg line-clamp-2">

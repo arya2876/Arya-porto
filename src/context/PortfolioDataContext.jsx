@@ -56,6 +56,7 @@ function transformAllData(apiData, staticData) {
             email: info.email || staticData.personalInfo.email,
             phone: info.phone || staticData.personalInfo.phone,
             location: info.location || staticData.personalInfo.location,
+            cv_url: info.cv_url || staticData.personalInfo.cv_url || staticData.personalInfo.cvUrl,
         },
         statistics: (apiData.statistics || []).map(s => ({
             value: parseInt(s.value),
@@ -107,7 +108,7 @@ export function PortfolioDataProvider({ children }) {
                     aboutJourney: transformed.aboutJourney || defaultData.aboutJourney,
                     experience: exp?.length ? exp : defaultData.experience,
                     projects: proj?.length ? proj : defaultData.projects,
-                    portfolioCategories: cats?.length ? cats : defaultData.portfolioCategories,
+                    portfolioCategories: cats?.length ? [{id: 'all', label: 'All Projects'}, ...cats] : defaultData.portfolioCategories,
                     services: svc?.length ? svc : defaultData.services,
                     testimonials: testi?.length ? testi : defaultData.testimonials,
                     workingProcess: wp?.length ? wp : defaultData.workingProcess,
