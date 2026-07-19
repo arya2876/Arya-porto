@@ -10,6 +10,7 @@ import { navNum } from '../../data/navigation';
 import FadeIn from '../animations/FadeIn';
 import ScrollGradientText from '../ui/ScrollGradientText';
 import SectionHeading from '../ui/SectionHeading';
+import PdfThumbnail from '../ui/PdfThumbnail';
 
 /**
  * Achievements Section (06)
@@ -79,22 +80,30 @@ function CertThumbnail({ cert }) {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={e => { e.target.style.display = 'none'; }}
                 />
-                <div className="absolute top-2 right-2">
+            </div>
+        );
+    }
+
+    if (cert.image && type === 'pdf') {
+        // Render halaman 1 PDF sebagai gambar nyata
+        return (
+            <div className="aspect-video overflow-hidden relative">
+                <PdfThumbnail
+                    url={cert.image}
+                    className="w-full h-full group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-2 right-2 pointer-events-none">
                     <FileTypeBadge url={cert.image} />
                 </div>
             </div>
         );
     }
 
-    if (cert.image && (type === 'pdf' || type === 'word')) {
+    if (cert.image && type === 'word') {
         return (
-            <div className="aspect-video flex flex-col items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900 relative">
-                {type === 'pdf'
-                    ? <FaFilePdf className="w-12 h-12 text-red-400 mb-2" />
-                    : <FaFileWord className="w-12 h-12 text-blue-400 mb-2" />}
-                <span className="text-xs text-slate-400">
-                    {type === 'pdf' ? 'PDF Document' : 'Word Document'}
-                </span>
+            <div className="aspect-video flex flex-col items-center justify-center bg-gradient-to-br from-blue-900/40 to-slate-900 relative">
+                <FaFileWord className="w-12 h-12 text-blue-400 mb-2" />
+                <span className="text-xs text-slate-400">Word Document</span>
                 <div className="absolute top-2 right-2"><FileTypeBadge url={cert.image} /></div>
             </div>
         );
@@ -271,16 +280,21 @@ const Achievements = () => {
                                         <img
                                             src={selectedCert.image}
                                             alt={selectedCert.title}
-                                            className="w-full max-h-64 object-contain bg-black/10"
+                                            className="w-full max-h-72 object-contain bg-black/10"
                                         />
+                                    ) : fileType === 'pdf' ? (
+                                        // Render halaman 1 PDF sebagai gambar di modal
+                                        <div className="relative bg-slate-900" style={{ minHeight: '220px' }}>
+                                            <PdfThumbnail
+                                                url={selectedCert.image}
+                                                scale={2}
+                                                className="w-full max-h-80"
+                                            />
+                                        </div>
                                     ) : (
                                         <div className="flex flex-col items-center justify-center py-8 gap-3 bg-slate-50 dark:bg-slate-900">
-                                            {fileType === 'pdf'
-                                                ? <FaFilePdf className="w-16 h-16 text-red-400" />
-                                                : <FaFileWord className="w-16 h-16 text-blue-400" />}
-                                            <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary">
-                                                {fileType === 'pdf' ? 'PDF Document' : 'Word Document'}
-                                            </p>
+                                            <FaFileWord className="w-16 h-16 text-blue-400" />
+                                            <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary">Word Document</p>
                                         </div>
                                     )}
                                 </div>
