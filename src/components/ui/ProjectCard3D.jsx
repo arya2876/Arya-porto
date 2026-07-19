@@ -248,6 +248,7 @@ const ProjectCard3D = ({ projects = [], autoRotate = true, rotationSpeed = 3500 
               transition={{ type: 'spring', stiffness: 300, damping: 25 }}
               className="relative w-full max-w-4xl max-h-[85vh] overflow-y-auto bg-light-card dark:bg-dark-card rounded-2xl shadow-2xl border-2 border-primary-500/30 dark:border-primary-400/30"
               onClick={(e) => e.stopPropagation()}
+              data-lenis-prevent="true"
             >
               {/* Close Button */}
               <button
@@ -322,6 +323,49 @@ const ProjectCard3D = ({ projects = [], autoRotate = true, rotationSpeed = 3500 
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
                 >
+                  {/* Links - Moved to top for visibility */}
+                  <div className="flex flex-wrap gap-4 mb-8">
+                    {selectedProject.liveUrl && (
+                      <motion.a
+                        href={selectedProject.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-medium hover:shadow-glow transition-all hover:scale-105"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <FaExternalLinkAlt className="w-4 h-4" />
+                        View Live Demo
+                      </motion.a>
+                    )}
+                    {selectedProject.githubUrl && (
+                      <motion.a
+                        href={selectedProject.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border-2 border-light-border dark:border-dark-border text-light-text dark:text-dark-text font-medium hover:border-primary-500 dark:hover:border-primary-400 transition-all hover:scale-105"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <FaGithub className="w-4 h-4" />
+                        View Source Code
+                      </motion.a>
+                    )}
+                    {selectedProject.image && (
+                      <motion.a
+                        href={selectedProject.image}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border-2 border-primary-500/50 text-primary-500 dark:text-primary-400 font-medium hover:bg-primary-500/10 transition-all hover:scale-105"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <FaExternalLinkAlt className="w-4 h-4" />
+                        Preview Image
+                      </motion.a>
+                    )}
+                  </div>
+
                   <h3 className="text-xl font-bold mb-4 text-light-text dark:text-dark-text">
                     About This Project
                   </h3>
@@ -388,48 +432,6 @@ const ProjectCard3D = ({ projects = [], autoRotate = true, rotationSpeed = 3500 
                     </div>
                   </div>
 
-                  {/* Links */}
-                  <div className="flex flex-wrap gap-4 pt-6 border-t border-light-border dark:border-dark-border">
-                    {selectedProject.liveUrl && (
-                      <motion.a
-                        href={selectedProject.liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-medium hover:shadow-glow transition-all hover:scale-105"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <FaExternalLinkAlt className="w-4 h-4" />
-                        View Live Demo
-                      </motion.a>
-                    )}
-                    {selectedProject.githubUrl && (
-                      <motion.a
-                        href={selectedProject.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border-2 border-light-border dark:border-dark-border text-light-text dark:text-dark-text font-medium hover:border-primary-500 dark:hover:border-primary-400 transition-all hover:scale-105"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <FaGithub className="w-4 h-4" />
-                        View Source Code
-                      </motion.a>
-                    )}
-                    {selectedProject.image && (
-                      <motion.a
-                        href={selectedProject.image}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border-2 border-primary-500/50 text-primary-500 dark:text-primary-400 font-medium hover:bg-primary-500/10 transition-all hover:scale-105"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <FaExternalLinkAlt className="w-4 h-4" />
-                        Preview Image
-                      </motion.a>
-                    )}
-                  </div>
                 </motion.div>
               </div>
             </motion.div>
