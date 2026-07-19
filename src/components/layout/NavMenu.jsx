@@ -1,15 +1,13 @@
-import { APP_CONFIG } from '../../utils/constants';
 import { NAV_ITEMS } from '../../data/navigation';
 import { scrollToId } from '../../utils/smoothScroll';
 import { useTheme } from '../../hooks/useTheme';
 import ThemeToggle from '../ui/ThemeToggle';
 import StaggeredMenu from './StaggeredMenu';
+import { useSocialLinks } from '../../hooks/useSocialLinks';
 
 /**
  * NavMenu - portfolio navigation using the StaggeredMenu (React Bits) component.
- * Items come from src/data/navigation.js (single source of truth) — the same
- * list drives the section order in App.jsx, and StaggeredMenu's CSS counter
- * renders the 01-07 numbering from array order automatically.
+ * Social links sekarang datang dari Supabase via useSocialLinks().
  */
 const menuItems = NAV_ITEMS.map(item => ({
   label: item.label,
@@ -17,23 +15,34 @@ const menuItems = NAV_ITEMS.map(item => ({
   link: `#${item.id}`,
 }));
 
-const socialItems = [
-  { label: 'Instagram', link: APP_CONFIG.social.instagram },
-  { label: 'TikTok', link: APP_CONFIG.social.tiktok },
-  { label: 'LinkedIn', link: APP_CONFIG.social.linkedin },
-  { label: 'GitHub', link: APP_CONFIG.social.github },
-].filter(s => s.link && s.link !== '#');
-
 const smoothScrollTo = (e, href) => {
   if (!href || !href.startsWith('#')) return;
   e.preventDefault();
   scrollToId(href.slice(1), { offset: -24 });
 };
 
+const SOCIAL_LABELS = {
+  instagram: 'Instagram',
+  tiktok: 'TikTok',
+  linkedin: 'LinkedIn',
+  github: 'GitHub',
+  twitter: 'Twitter',
+  youtube: 'YouTube',
+  dribbble: 'Dribbble',
+  behance: 'Behance',
+};
+
 const NavMenu = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const buttonColor = isDark ? '#f8fafc' : '#0f172a';
+  const socialLinks = useSocialLinks();
+
+  // Build social items dynamically from Supabase data
+  const socialItems = Object.entries(socialLinks).map(([platform, url]) => ({
+    label: SOCIAL_LABELS[platform] || platform.charAt(0).toUpperCase() + platform.slice(1),
+    link: url,
+  }));
 
   return (
     <StaggeredMenu

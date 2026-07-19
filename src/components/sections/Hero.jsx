@@ -8,13 +8,14 @@ import {
 import { APP_CONFIG } from '../../utils/constants';
 import { scrollToId } from '../../utils/smoothScroll';
 import { usePortfolioContext } from '../../context/PortfolioDataContext';
+import { useSocialLinks } from '../../hooks/useSocialLinks';
 import BackgroundText from '../ui/BackgroundText';
 
-const SOCIALS = [
-  { icon: FaInstagram, href: APP_CONFIG.social.instagram, label: 'Instagram', colors: 'from-pink-500 to-purple-600' },
-  { icon: FaTiktok, href: APP_CONFIG.social.tiktok, label: 'TikTok', colors: 'from-black to-cyan-400' },
-  { icon: FaLinkedin, href: APP_CONFIG.social.linkedin, label: 'LinkedIn', colors: 'from-blue-600 to-blue-400' },
-  { icon: FaGithub, href: APP_CONFIG.social.github, label: 'GitHub', colors: 'from-gray-800 to-purple-600' },
+const SOCIAL_DEFS = [
+  { key: 'instagram', icon: FaInstagram, label: 'Instagram', colors: 'from-pink-500 to-purple-600' },
+  { key: 'tiktok',    icon: FaTiktok,    label: 'TikTok',    colors: 'from-black to-cyan-400' },
+  { key: 'linkedin',  icon: FaLinkedin,  label: 'LinkedIn',  colors: 'from-blue-600 to-blue-400' },
+  { key: 'github',    icon: FaGithub,    label: 'GitHub',    colors: 'from-gray-800 to-purple-600' },
 ];
 
 // Tech icons that float in orbit around the portrait (replaces the old stat cards)
@@ -92,6 +93,10 @@ const OrbitRing = ({ duration, dir, radius, icons }) => (
  */
 const Hero = () => {
   const { personalInfo } = usePortfolioContext();
+  const socialLinks = useSocialLinks();
+  const SOCIALS = SOCIAL_DEFS
+    .map(s => ({ ...s, href: socialLinks[s.key] || '#' }))
+    .filter(s => s.href !== '#');
   const sectionRef = useRef(null);
   const imageRef = useRef(null);
   const [overImage, setOverImage] = useState(false);

@@ -1,9 +1,23 @@
 import { motion } from 'framer-motion';
-import { FaGithub, FaLinkedin, FaInstagram, FaTiktok, FaHeart, FaArrowUp } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaInstagram, FaTiktok, FaHeart, FaArrowUp, FaYoutube, FaTwitter, FaDribbble } from 'react-icons/fa';
 import { APP_CONFIG, NAV_LINKS } from '../../utils/constants';
 import { scrollToId } from '../../utils/smoothScroll';
 import useScrollAnimation from '../../hooks/useScrollAnimation';
 import { usePortfolioContext } from '../../context/PortfolioDataContext';
+import { useSocialLinks } from '../../hooks/useSocialLinks';
+
+/**
+ * Footer Component with multiple sections and back-to-top button
+ */
+const SOCIAL_DEFS = [
+    { key: 'instagram', icon: FaInstagram, label: 'Instagram', colors: 'from-pink-500 to-purple-600',   hoverShadow: 'hover:shadow-pink-500/50' },
+    { key: 'tiktok',    icon: FaTiktok,    label: 'TikTok',    colors: 'from-black to-cyan-400',         hoverShadow: 'hover:shadow-cyan-400/50' },
+    { key: 'linkedin',  icon: FaLinkedin,  label: 'LinkedIn',  colors: 'from-blue-600 to-blue-400',     hoverShadow: 'hover:shadow-blue-500/50' },
+    { key: 'github',    icon: FaGithub,    label: 'GitHub',    colors: 'from-gray-800 to-purple-600',   hoverShadow: 'hover:shadow-purple-500/50' },
+    { key: 'youtube',   icon: FaYoutube,   label: 'YouTube',   colors: 'from-red-600 to-red-400',       hoverShadow: 'hover:shadow-red-500/50' },
+    { key: 'twitter',   icon: FaTwitter,   label: 'Twitter',   colors: 'from-sky-500 to-blue-400',      hoverShadow: 'hover:shadow-sky-400/50' },
+    { key: 'dribbble',  icon: FaDribbble,  label: 'Dribbble',  colors: 'from-pink-400 to-rose-500',     hoverShadow: 'hover:shadow-pink-400/50' },
+];
 
 /**
  * Footer Component with multiple sections and back-to-top button
@@ -11,7 +25,8 @@ import { usePortfolioContext } from '../../context/PortfolioDataContext';
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const { scrollToTop } = useScrollAnimation();
-  const { personalInfo, socialLinks: contextSocial } = usePortfolioContext();
+  const { personalInfo } = usePortfolioContext();
+  const socialLinksMap = useSocialLinks();
 
   // Use context data with fallback to APP_CONFIG
   const email = personalInfo?.email || APP_CONFIG.email;
@@ -19,12 +34,10 @@ const Footer = () => {
   const location = personalInfo?.location || APP_CONFIG.location;
   const authorName = personalInfo?.name || APP_CONFIG.author;
 
-  const socialLinksData = [
-    { icon: FaInstagram, href: contextSocial?.instagram || APP_CONFIG.social.instagram, label: 'Instagram', colors: 'from-pink-500 to-purple-600', hoverShadow: 'hover:shadow-pink-500/50' },
-    { icon: FaTiktok, href: contextSocial?.tiktok || APP_CONFIG.social.tiktok, label: 'TikTok', colors: 'from-black to-cyan-400', hoverShadow: 'hover:shadow-cyan-400/50' },
-    { icon: FaLinkedin, href: contextSocial?.linkedin || APP_CONFIG.social.linkedin, label: 'LinkedIn', colors: 'from-blue-600 to-blue-400', hoverShadow: 'hover:shadow-blue-500/50' },
-    { icon: FaGithub, href: contextSocial?.github || APP_CONFIG.social.github, label: 'GitHub', colors: 'from-gray-800 to-purple-600', hoverShadow: 'hover:shadow-purple-500/50' },
-  ];
+  // Build social list: only platforms with real URLs
+  const socialLinksData = SOCIAL_DEFS
+    .filter(s => socialLinksMap[s.key])
+    .map(s => ({ ...s, href: socialLinksMap[s.key] }));
 
   const quickLinks = NAV_LINKS.slice(1, 5); // Skip "Home" for footer
 

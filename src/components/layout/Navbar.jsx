@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBars, FaTimes, FaGithub, FaLinkedin, FaInstagram, FaTiktok } from 'react-icons/fa';
-import { NAV_LINKS, APP_CONFIG } from '../../utils/constants';
+import { NAV_LINKS } from '../../utils/constants';
 import { scrollToId } from '../../utils/smoothScroll';
 import ThemeToggle from '../ui/ThemeToggle';
 import ExpandableLogo from '../ui/ExpandableLogo';
 import useScrollAnimation from '../../hooks/useScrollAnimation';
+import { useSocialLinks } from '../../hooks/useSocialLinks';
 
 /**
  * NavLink Component with gradient hover effect
@@ -24,7 +25,6 @@ const NavLink = ({ link, index, onClick }) => {
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
     >
-      {/* Text with gradient on hover */}
       <motion.span
         className="relative z-10 transition-all duration-300"
         animate={{
@@ -36,58 +36,68 @@ const NavLink = ({ link, index, onClick }) => {
           WebkitTextFillColor: isHovered ? 'transparent' : 'currentColor',
           backgroundSize: '200% 100%',
         }}
-        style={{
-          backgroundPosition: '0% 0%',
-          animation: isHovered ? 'gradient-flow 3s ease infinite' : 'none',
-        }}
+        style={{ backgroundPosition: '0% 0%', animation: isHovered ? 'gradient-flow 3s ease infinite' : 'none' }}
       >
         {link.name}
       </motion.span>
-
-      {/* Underline effect */}
       <motion.span
         className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-primary-500 to-secondary-500"
         initial={{ width: '0%' }}
         animate={{ width: isHovered ? '100%' : '0%' }}
         transition={{ duration: 0.3 }}
       />
-
-      {/* Glow effect */}
       {isHovered && (
         <motion.span
           className="absolute inset-0 -z-10 blur-xl bg-gradient-to-r from-primary-500/20 to-secondary-500/20"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         />
       )}
     </motion.a>
   );
 };
 
+// Social icon definitions with styles
+const SOCIAL_DEFS = [
+  { key: 'instagram', icon: FaInstagram, gradient: 'from-pink-500 to-purple-600' },
+  { key: 'tiktok',    icon: FaTiktok,    gradient: 'from-black to-cyan-400' },
+  { key: 'linkedin',  icon: FaLinkedin,  gradient: 'from-blue-600 to-blue-400' },
+  { key: 'github',    icon: FaGithub,    gradient: 'from-gray-800 to-purple-600' },
+];
+
+const SocialIcon = ({ href, Icon, gradient, size = 'w-10 h-10', iconSize = 'w-5 h-5' }) => (
+  <motion.a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className={`relative ${size} flex items-center justify-center rounded-xl bg-transparent border-2 border-light-text-secondary/30 dark:border-dark-text-secondary/30 text-light-text-secondary dark:text-dark-text-secondary hover:border-transparent shadow-md transition-all duration-300 group overflow-hidden`}
+    whileHover={{ y: -5, scale: 1.1 }}
+    whileTap={{ scale: 0.95 }}
+  >
+    <span className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl`} />
+    <Icon className={`${iconSize} relative z-10 group-hover:text-white group-hover:scale-110 transition-all`} />
+  </motion.a>
+);
+
 /**
- * Navbar Component with scroll animations and mobile menu
+ * Navbar Component — social links dari Supabase via useSocialLinks()
  */
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { isScrolled } = useScrollAnimation();
+  const socialLinks = useSocialLinks();
 
-  // Close mobile menu when scrolling
+  // Build active social list (only platforms with real URLs)
+  const socials = SOCIAL_DEFS.filter(s => socialLinks[s.key]);
+
   useEffect(() => {
-    const handleScroll = () => {
-      if (isOpen) setIsOpen(false);
-    };
-
+    const handleScroll = () => { if (isOpen) setIsOpen(false); };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isOpen]);
 
-  // Handle smooth scroll to section
   const handleNavClick = (e, href) => {
     e.preventDefault();
     setIsOpen(false);
-
-    // Offset -80 keeps the section clear of the fixed navbar
     scrollToId(href.replace('#', ''), { offset: -80 });
   };
 
@@ -98,18 +108,17 @@ const Navbar = () => {
         animate={{ y: 0 }}
         className={`
           fixed top-0 left-0 right-0 z-50 transition-all duration-300
-          ${isScrolled 
-            ? 'bg-light-card/80 dark:bg-dark-card/80 backdrop-blur-md shadow-lg' 
+          ${isScrolled
+            ? 'bg-light-card/80 dark:bg-dark-card/80 backdrop-blur-md shadow-lg'
             : 'bg-transparent'
           }
         `}
       >
         <div className="container-custom">
           <div className="flex items-center justify-between h-20">
-            {/* Logo - Expandable AW -> Arya Winata */}
             <ExpandableLogo onClick={(e) => handleNavClick(e, '#home')} />
 
-            {/* Desktop Navigation */}
+            {/* Desktop Nav Links */}
             <div className="hidden lg:flex items-center gap-8">
               {NAV_LINKS.map((link, index) => (
                 <NavLink
@@ -121,62 +130,25 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* Right Side - Social & Theme Toggle */}
+            {/* Desktop Right: Social Icons + Theme */}
             <div className="hidden lg:flex items-center gap-4">
-              {/* Social Icons */}
               <div className="flex items-center gap-3">
-                <motion.a
-                  href={APP_CONFIG.social.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-transparent border-2 border-light-text-secondary/30 dark:border-dark-text-secondary/30 text-light-text-secondary dark:text-dark-text-secondary hover:border-transparent shadow-md transition-all duration-300 group overflow-hidden"
-                  whileHover={{ y: -5, scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <span className="absolute inset-0 bg-gradient-to-br from-pink-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-                  <FaInstagram className="w-5 h-5 relative z-10 group-hover:text-white group-hover:scale-110 transition-all" />
-                </motion.a>
-                <motion.a
-                  href={APP_CONFIG.social.tiktok}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-transparent border-2 border-light-text-secondary/30 dark:border-dark-text-secondary/30 text-light-text-secondary dark:text-dark-text-secondary hover:border-transparent shadow-md transition-all duration-300 group overflow-hidden"
-                  whileHover={{ y: -5, scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <span className="absolute inset-0 bg-gradient-to-br from-black to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-                  <FaTiktok className="w-5 h-5 relative z-10 group-hover:text-white group-hover:scale-110 transition-all" />
-                </motion.a>
-                <motion.a
-                  href={APP_CONFIG.social.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-transparent border-2 border-light-text-secondary/30 dark:border-dark-text-secondary/30 text-light-text-secondary dark:text-dark-text-secondary hover:border-transparent shadow-md transition-all duration-300 group overflow-hidden"
-                  whileHover={{ y: -5, scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <span className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-                  <FaLinkedin className="w-5 h-5 relative z-10 group-hover:text-white group-hover:scale-110 transition-all" />
-                </motion.a>
-                <motion.a
-                  href={APP_CONFIG.social.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-transparent border-2 border-light-text-secondary/30 dark:border-dark-text-secondary/30 text-light-text-secondary dark:text-dark-text-secondary hover:border-transparent shadow-md transition-all duration-300 group overflow-hidden"
-                  whileHover={{ y: -5, scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <span className="absolute inset-0 bg-gradient-to-br from-gray-800 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-                  <FaGithub className="w-5 h-5 relative z-10 group-hover:text-white group-hover:scale-110 transition-all" />
-                </motion.a>
+                {socials.map(s => (
+                  <SocialIcon
+                    key={s.key}
+                    href={socialLinks[s.key]}
+                    Icon={s.icon}
+                    gradient={s.gradient}
+                    size="w-10 h-10"
+                    iconSize="w-5 h-5"
+                  />
+                ))}
               </div>
-
-              <div className="w-px h-6 bg-light-border dark:bg-dark-border" />
-              
+              {socials.length > 0 && <div className="w-px h-6 bg-light-border dark:bg-dark-border" />}
               <ThemeToggle />
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile: Theme + Hamburger */}
             <div className="lg:hidden flex items-center gap-4">
               <ThemeToggle />
               <motion.button
@@ -185,11 +157,9 @@ const Navbar = () => {
                 whileTap={{ scale: 0.9 }}
                 aria-label="Toggle menu"
               >
-                {isOpen ? (
-                  <FaTimes className="w-6 h-6 text-light-text dark:text-dark-text" />
-                ) : (
-                  <FaBars className="w-6 h-6 text-light-text dark:text-dark-text" />
-                )}
+                {isOpen
+                  ? <FaTimes className="w-6 h-6 text-light-text dark:text-dark-text" />
+                  : <FaBars className="w-6 h-6 text-light-text dark:text-dark-text" />}
               </motion.button>
             </div>
           </div>
@@ -219,65 +189,29 @@ const Navbar = () => {
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ x: 10 }}
                   >
-                    {/* Gradient background on hover */}
                     <span className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-secondary-500/10 -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
-                    {/* Text with gradient on hover */}
                     <span className="relative z-10 group-hover:bg-gradient-to-r group-hover:from-primary-500 group-hover:to-secondary-500 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
                       {link.name}
                     </span>
-                    {/* Arrow indicator */}
-                    <span className="inline-block ml-2 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-2 transition-all duration-300">
-                      →
-                    </span>
+                    <span className="inline-block ml-2 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-2 transition-all duration-300">→</span>
                   </motion.a>
                 ))}
 
-                <div className="mt-8 flex items-center gap-6">
-                  <motion.a
-                    href={APP_CONFIG.social.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="relative w-12 h-12 flex items-center justify-center rounded-xl bg-transparent border-2 border-light-text-secondary/30 dark:border-dark-text-secondary/30 text-light-text-secondary dark:text-dark-text-secondary hover:border-transparent shadow-md transition-all duration-300 group overflow-hidden"
-                    whileHover={{ y: -5, scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span className="absolute inset-0 bg-gradient-to-br from-pink-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-                    <FaInstagram className="w-6 h-6 relative z-10 group-hover:text-white group-hover:scale-110 transition-all" />
-                  </motion.a>
-                  <motion.a
-                    href={APP_CONFIG.social.tiktok}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="relative w-12 h-12 flex items-center justify-center rounded-xl bg-transparent border-2 border-light-text-secondary/30 dark:border-dark-text-secondary/30 text-light-text-secondary dark:text-dark-text-secondary hover:border-transparent shadow-md transition-all duration-300 group overflow-hidden"
-                    whileHover={{ y: -5, scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span className="absolute inset-0 bg-gradient-to-br from-black to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-                    <FaTiktok className="w-6 h-6 relative z-10 group-hover:text-white group-hover:scale-110 transition-all" />
-                  </motion.a>
-                  <motion.a
-                    href={APP_CONFIG.social.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="relative w-12 h-12 flex items-center justify-center rounded-xl bg-transparent border-2 border-light-text-secondary/30 dark:border-dark-text-secondary/30 text-light-text-secondary dark:text-dark-text-secondary hover:border-transparent shadow-md transition-all duration-300 group overflow-hidden"
-                    whileHover={{ y: -5, scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-                    <FaLinkedin className="w-6 h-6 relative z-10 group-hover:text-white group-hover:scale-110 transition-all" />
-                  </motion.a>
-                  <motion.a
-                    href={APP_CONFIG.social.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="relative w-12 h-12 flex items-center justify-center rounded-xl bg-transparent border-2 border-light-text-secondary/30 dark:border-dark-text-secondary/30 text-light-text-secondary dark:text-dark-text-secondary hover:border-transparent shadow-md transition-all duration-300 group overflow-hidden"
-                    whileHover={{ y: -5, scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span className="absolute inset-0 bg-gradient-to-br from-gray-800 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-                    <FaGithub className="w-6 h-6 relative z-10 group-hover:text-white group-hover:scale-110 transition-all" />
-                  </motion.a>
-                </div>
+                {/* Mobile Social Icons */}
+                {socials.length > 0 && (
+                  <div className="mt-8 flex items-center gap-4">
+                    {socials.map(s => (
+                      <SocialIcon
+                        key={s.key}
+                        href={socialLinks[s.key]}
+                        Icon={s.icon}
+                        gradient={s.gradient}
+                        size="w-12 h-12"
+                        iconSize="w-6 h-6"
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>

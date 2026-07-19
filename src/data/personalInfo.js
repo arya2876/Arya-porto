@@ -28,14 +28,13 @@ export const skillGroups = [
   { title: 'Eksplorasi', skills: ['Google Cloud (Gemini)', 'AWS (dasar)'] },
 ];
 
-// Social Media Links
+// Social Media Links — fallback statis jika database belum diisi.
+// Edit lewat Admin Panel → Personal Info → Social Links agar sinkron di seluruh halaman.
 export const socialLinks = {
-  github: 'https://github.com/arya2876',
-  linkedin: 'https://www.linkedin.com/in/arya-winata', // Update with your LinkedIn
-  instagram: 'https://www.instagram.com/aryawinata', // Update with your Instagram
-  tiktok: 'https://www.tiktok.com/@aryawinata', // Update with your TikTok
-  dribbble: '', // Optional
+  github: 'https://github.com/arya2876', // Real URL — selalu tampil
+  // Platform lain akan tampil otomatis setelah diisi di Admin Panel
 };
+
 
 // About Me Journey
 export const aboutJourney = {
