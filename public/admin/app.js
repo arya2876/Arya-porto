@@ -12,13 +12,13 @@ let authToken = localStorage.getItem('adminToken') || null;
 // ===========================
 const sections = [
     { id: 'dashboard',   label: '📊 Dashboard'       },
-    { id: 'personal',    label: '👤 Personal Info'    },
-    { id: 'experience',  label: '📋 Experience'       },
-    { id: 'projects',    label: '🎨 Projects'         },
-    { id: 'services',    label: '🛠️ Services'         },
-    { id: 'certificates', label: '🏆 Certificates'    },
-    { id: 'skills',      label: '⚡ Skills'           },
-    { id: 'messages',    label: '💬 Messages'         },
+    { id: 'personal',    label: '01. HOME'           },
+    { id: 'skills',      label: '02. ABOUT'          },
+    { id: 'experience',  label: '03. EXPERIENCE'     },
+    { id: 'projects',    label: '04. PORTFOLIO'      },
+    { id: 'services',    label: '05. WHAT I DO'      },
+    { id: 'certificates', label: '06. ACHIEVEMENTS'  },
+    { id: 'messages',    label: '07. CONTACT'        },
 ];
 
 // ===========================
@@ -331,8 +331,7 @@ async function loadPersonal() {
 async function editPersonalInfo() {
     const data = await api('personal-info');
     const roles = (data.roles || []).join(', ');
-    const paragraphs = (data.about_paragraphs || []).join('\n\n');
-    openModal('Edit Personal Info', `
+    openModal('Edit Home & Personal Info', `
         ${formField('Name', 'name', data.name)}
         ${formField('Roles (comma separated)', 'roles', roles)}
         ${formField('Primary Role', 'primary_role', data.primary_role)}
@@ -346,19 +345,19 @@ async function editPersonalInfo() {
             ${formField('Location', 'location', data.location)}
             ${formField('Status', 'status', data.status)}
         </div>
-        ${formField('CV URL (link Google Drive / file)', 'cv_url', data.cv_url)}
-        ${formField('About Paragraphs (separate with blank line)', 'about_paragraphs', paragraphs, 'textarea')}
+        ${certFileUploadField('Upload CV (PDF/Word)', 'cv_url', data.cv_url)}
     `, `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="savePersonalInfo()">Save</button>`);
 }
 
 async function savePersonalInfo() {
+    const data = await api('personal-info'); // fetch existing to keep about_paragraphs intact
     const body = {
+        ...data,
         name: getField('name'), roles: getField('roles').split(',').map(s => s.trim()).filter(Boolean),
         primary_role: getField('primary_role'), tagline: getField('tagline'),
         description: getField('description'), email: getField('email'), phone: getField('phone'),
         location: getField('location'), status: getField('status'),
-        cv_url: getField('cv_url'),
-        about_paragraphs: getField('about_paragraphs').split('\n\n').filter(Boolean),
+        cv_url: getField('cv_url')
     };
     await api('personal-info', 'PUT', body);
     toast('Personal info updated!'); closeModal(); loadPersonal();
@@ -647,18 +646,47 @@ async function deleteCert(id) {
 }
 
 // ===========================
-// Skills
+// About (Skills & Bio)
 // ===========================
 async function loadSkills() {
-    const skills = await api('skills');
+    const [skills, personal] = await Promise.all([api('skills'), api('personal-info')]);
+    
     document.getElementById('content').innerHTML = `
-    <div class="card"><div class="card-header"><h2>Skills</h2><button class="btn btn-primary btn-sm" onclick="addSkill()">+ Add Skill</button></div>
+    <div class="card" style="margin-bottom: 24px;">
+        <div class="card-header">
+            <h2>About Me (Bio)</h2>
+            <button class="btn btn-primary btn-sm" onclick='editBio(${JSON.stringify(personal.about_paragraphs || [])})'>✏️ Edit Bio</button>
+        </div>
+        <div class="card-body">
+            <div style="white-space: pre-wrap; color: var(--text-secondary); line-height: 1.6;">${(personal.about_paragraphs || []).join('\n\n') || '-'}</div>
+        </div>
+    </div>
+    
+    <div class="card"><div class="card-header"><h2>Skills & Expertise</h2><button class="btn btn-primary btn-sm" onclick="addSkill()">+ Add Skill</button></div>
         <div class="card-body">${renderCrudTable(skills || [], [
             { key: 'name', label: 'Skill' },
             { key: 'level', label: 'Level', render: v => `<div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--border);border-radius:3px"><div style="width:${v}%;height:100%;background:var(--accent);border-radius:3px"></div></div>${v}%</div>` },
             { key: 'category', label: 'Category', render: v => `<span class="tag">${v}</span>` }
         ], 'editSkill', 'deleteSkill')}</div>
     </div>`;
+}
+
+function editBio(paragraphs) {
+    const val = paragraphs.join('\n\n');
+    openModal('Edit About Bio', 
+        formField('About Paragraphs (separate with blank line)', 'about_paragraphs', val, 'textarea', 'rows="8"'),
+        `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveBio()">Save</button>`
+    );
+}
+
+async function saveBio() {
+    const data = await api('personal-info'); // fetch existing info
+    const body = {
+        ...data,
+        about_paragraphs: getField('about_paragraphs').split('\n\n').filter(Boolean)
+    };
+    await api('personal-info', 'PUT', body);
+    toast('Bio updated!'); closeModal(); loadSkills();
 }
 function skillForm(s = {}) {
     return `${s.id ? `<input type="hidden" id="f_id" value="${s.id}">` : ''}

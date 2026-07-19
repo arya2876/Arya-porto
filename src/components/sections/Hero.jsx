@@ -226,7 +226,7 @@ const Hero = () => {
             CONTACT
           </motion.button>
           <motion.a
-            href={APP_CONFIG.resumeUrl}
+            href={personalInfo?.cv_url || '#'}
             target="_blank"
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
