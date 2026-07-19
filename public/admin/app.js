@@ -477,7 +477,10 @@ function projectForm(s = {}) {
         ${formField('Category', 'category', '', 'select', ['web','ui','mobile','other'].map(c => `<option value="${c}" ${s.category===c?'selected':''}>${c}</option>`).join(''))}
         ${formField('Year', 'year', s.year)}
     </div>
-    ${formField('Short Description', 'description', s.description, 'textarea')}
+    <div class="form-row">
+        ${formField('Short Description', 'description', s.description, 'textarea')}
+        ${formField('Placeholder Style (if no image)', 'placeholder_variant', s.placeholder_variant || s.placeholderVariant || 'code', 'select', ['code','web','mobile','design','ecommerce'].map(v => `<option value="${v}" ${s.placeholder_variant===v || s.placeholderVariant===v ? 'selected':''}>${v}</option>`).join(''))}
+    </div>
     ${formField('Full Description', 'full_description', s.full_description || s.fullDescription, 'textarea')}
     ${certFileUploadField('Project Image', 'image', s.image)}
     ${formField('Technologies (comma separated)', 'technologies', techs)}
@@ -498,7 +501,7 @@ async function saveProject(u = false) {
     const body = {
         title: getField('title'), category: getField('category'), year: getField('year'),
         description: getField('description'), full_description: getField('full_description'),
-        image: getField('image'),
+        image: getField('image'), placeholder_variant: getField('placeholder_variant'),
         technologies: getField('technologies').split(',').map(s => s.trim()).filter(Boolean),
         tags: getField('tags').split(',').map(s => s.trim()).filter(Boolean),
         live_url: getField('live_url'), github_url: getField('github_url'),

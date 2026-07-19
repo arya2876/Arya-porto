@@ -316,9 +316,53 @@ const ProjectCard3D = ({ projects = [], autoRotate = true, rotationSpeed = 3500 
                   <h3 className="text-xl font-bold mb-4 text-light-text dark:text-dark-text">
                     About This Project
                   </h3>
-                  <p className="text-base leading-relaxed text-light-text-secondary dark:text-dark-text-secondary mb-6">
+                  <p className="text-base leading-relaxed text-light-text-secondary dark:text-dark-text-secondary mb-8">
                     {selectedProject.fullDescription || selectedProject.description}
                   </p>
+
+                  {/* Project Info Grid (Year, Client, Duration, Category) */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                    {selectedProject.category && (
+                      <div>
+                        <span className="block text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider mb-1">
+                          Category
+                        </span>
+                        <span className="text-sm font-medium text-light-text dark:text-dark-text capitalize">
+                          {selectedProject.category}
+                        </span>
+                      </div>
+                    )}
+                    {selectedProject.year && (
+                      <div>
+                        <span className="block text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider mb-1">
+                          Year
+                        </span>
+                        <span className="text-sm font-medium text-light-text dark:text-dark-text">
+                          {selectedProject.year}
+                        </span>
+                      </div>
+                    )}
+                    {selectedProject.client && (
+                      <div>
+                        <span className="block text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider mb-1">
+                          Client
+                        </span>
+                        <span className="text-sm font-medium text-light-text dark:text-dark-text">
+                          {selectedProject.client}
+                        </span>
+                      </div>
+                    )}
+                    {selectedProject.duration && (
+                      <div>
+                        <span className="block text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider mb-1">
+                          Duration
+                        </span>
+                        <span className="text-sm font-medium text-light-text dark:text-dark-text">
+                          {selectedProject.duration}
+                        </span>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Technologies */}
                   {selectedProject.technologies && selectedProject.technologies.length > 0 && (

@@ -137,6 +137,10 @@ const Portfolio = () => {
                 technologies: project.technologies,
                 liveUrl: project.liveUrl,
                 githubUrl: project.githubUrl,
+                year: project.year,
+                client: project.client,
+                duration: project.duration,
+                category: project.category,
               }))}
               autoRotate={false}
             />
