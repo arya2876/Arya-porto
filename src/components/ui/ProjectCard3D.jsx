@@ -331,66 +331,62 @@ const ProjectCard3D = ({ projects = [], autoRotate = true, rotationSpeed = 3500 
 
                   {/* Project Info Grid (Year, Client, Duration, Category) */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                    {selectedProject.category && (
-                      <div>
-                        <span className="block text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider mb-1">
-                          Category
-                        </span>
-                        <span className="text-sm font-medium text-light-text dark:text-dark-text capitalize">
-                          {selectedProject.category}
-                        </span>
-                      </div>
-                    )}
-                    {selectedProject.year && (
-                      <div>
-                        <span className="block text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider mb-1">
-                          Year
-                        </span>
-                        <span className="text-sm font-medium text-light-text dark:text-dark-text">
-                          {selectedProject.year}
-                        </span>
-                      </div>
-                    )}
-                    {selectedProject.client && (
-                      <div>
-                        <span className="block text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider mb-1">
-                          Client
-                        </span>
-                        <span className="text-sm font-medium text-light-text dark:text-dark-text">
-                          {selectedProject.client}
-                        </span>
-                      </div>
-                    )}
-                    {selectedProject.duration && (
-                      <div>
-                        <span className="block text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider mb-1">
-                          Duration
-                        </span>
-                        <span className="text-sm font-medium text-light-text dark:text-dark-text">
-                          {selectedProject.duration}
-                        </span>
-                      </div>
-                    )}
+                    <div>
+                      <span className="block text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider mb-1">
+                        Category
+                      </span>
+                      <span className="text-sm font-medium text-light-text dark:text-dark-text capitalize">
+                        {selectedProject.category || '-'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="block text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider mb-1">
+                        Year
+                      </span>
+                      <span className="text-sm font-medium text-light-text dark:text-dark-text">
+                        {selectedProject.year || '-'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="block text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider mb-1">
+                        Client
+                      </span>
+                      <span className="text-sm font-medium text-light-text dark:text-dark-text">
+                        {selectedProject.client || '-'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="block text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider mb-1">
+                        Duration
+                      </span>
+                      <span className="text-sm font-medium text-light-text dark:text-dark-text">
+                        {selectedProject.duration || '-'}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Technologies */}
-                  {selectedProject.technologies && selectedProject.technologies.length > 0 && (
-                    <div className="mb-6">
-                      <h4 className="text-lg font-bold mb-3 text-light-text dark:text-dark-text">
-                        Technologies Used
-                      </h4>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedProject.technologies.map((tech, idx) => (
+                  <div className="mb-6">
+                    <h4 className="text-lg font-bold mb-3 text-light-text dark:text-dark-text">
+                      Technologies Used
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedProject.technologies && selectedProject.technologies.length > 0 ? (
+                        selectedProject.technologies.map((tech, idx) => (
                           <span
                             key={idx}
                             className="px-4 py-2 rounded-lg bg-primary-500/10 dark:bg-primary-400/10 border border-primary-500/20 dark:border-primary-400/20 text-light-text dark:text-dark-text font-medium"
                           >
                             {tech}
                           </span>
-                        ))}
-                      </div>
+                        ))
+                      ) : (
+                        <span className="text-sm text-light-text-secondary dark:text-dark-text-secondary">
+                          -
+                        </span>
+                      )}
                     </div>
-                  )}
+                  </div>
 
                   {/* Links */}
                   <div className="flex flex-wrap gap-4 pt-6 border-t border-light-border dark:border-dark-border">
@@ -418,6 +414,19 @@ const ProjectCard3D = ({ projects = [], autoRotate = true, rotationSpeed = 3500 
                       >
                         <FaGithub className="w-4 h-4" />
                         View Source Code
+                      </motion.a>
+                    )}
+                    {selectedProject.image && (
+                      <motion.a
+                        href={selectedProject.image}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border-2 border-primary-500/50 text-primary-500 dark:text-primary-400 font-medium hover:bg-primary-500/10 transition-all hover:scale-105"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <FaExternalLinkAlt className="w-4 h-4" />
+                        Preview Image
                       </motion.a>
                     )}
                   </div>
