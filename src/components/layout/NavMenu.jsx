@@ -48,7 +48,8 @@ const NavMenu = () => {
     <StaggeredMenu
       isFixed
       position="right"
-      brand="AW"
+      logoUrl="/logo-aw.svg"
+      brand="Arya Winata"
       items={menuItems}
       socialItems={socialItems}
       displaySocials={socialItems.length > 0}

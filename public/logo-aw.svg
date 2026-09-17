@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 609 200" fill="none">
+  <defs>
+    <linearGradient id="awLogoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4a90e2" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+  </defs>
+  <path fill-rule="evenodd" fill="url(#awLogoGrad)" d="M 234.5 1.0 L 250.0 0.5 L 262.5 8.0 L 324.0 115.5 L 390.0 55.5 L 426.0 118.5 L 535.0 16.5 L 550.0 10.5 L 607.5 11.0 L 408.0 198.5 L 370.0 134.5 L 306.0 193.5 L 227.0 56.5 L 81.0 168.5 L 62.0 174.5 L 0.5 174.0 L 221.0 6.5 L 234.0 1.5 Z M 174.5 121.0 L 228.0 120.5 L 241.0 125.5 L 250.5 136.0 L 280.5 191.0 L 225.0 191.5 L 212.5 171.0 L 205.0 164.5 L 195.0 161.5 L 124.0 161.5 L 174.0 121.5 Z" />
+</svg>

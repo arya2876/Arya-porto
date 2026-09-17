@@ -66,9 +66,16 @@
 
 .sm-logo-img {
   display: block;
-  height: 32px;
+  height: 34px;
   width: auto;
   object-fit: contain;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+  filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.2));
+}
+
+.sm-logo:hover .sm-logo-img {
+  transform: scale(1.06);
+  filter: drop-shadow(0 0 14px rgba(139, 92, 246, 0.55)) drop-shadow(0 0 4px rgba(56, 189, 248, 0.45));
 }
 
 .sm-toggle {

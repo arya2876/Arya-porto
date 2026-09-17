@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import Card from '../ui/Card';
-import SkillChips from '../ui/SkillChips';
+import SkillsLoop from '../ui/SkillsLoop';
 import SlideIn from '../animations/SlideIn';
 import ScrollGradientText from '../ui/ScrollGradientText';
 import SectionHeading from '../ui/SectionHeading';
@@ -100,11 +100,16 @@ const About = () => {
           {/* Skills */}
           <GlassmorphismSlide direction="right" delay={0.4}>
             <SlideIn direction="right">
-              <Card className="h-full">
-                <h3 className="text-2xl font-bold font-display mb-6 text-gradient">
-                  Skills &amp; Expertise
-                </h3>
-                <SkillChips groups={skillGroups} />
+              <Card className="h-full flex flex-col justify-between">
+                <div>
+                  <h3 className="text-2xl font-bold font-display mb-2 text-gradient">
+                    Skills &amp; Expertise
+                  </h3>
+                  <p className="text-xs text-light-text-secondary dark:text-dark-text-secondary mb-5">
+                    Tech stack &amp; creative ecosystem powering modern digital solutions
+                  </p>
+                </div>
+                <SkillsLoop />
               </Card>
             </SlideIn>
           </GlassmorphismSlide>

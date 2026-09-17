@@ -95,6 +95,9 @@ export default {
         'typing': 'typing 3.5s steps(40, end)',
         'blink': 'blink 0.75s step-end infinite',
         'rotate-3d': 'rotate3d 20s linear infinite',
+        // Cat-paw micro-interaction
+        'cat-paw-in-right': 'catPawInRight 0.5s ease-out forwards',
+        'cat-paw-in-left': 'catPawInLeft 0.5s ease-out forwards',
       },
       keyframes: {
         float: {
@@ -156,6 +159,20 @@ export default {
         rotate3d: {
           '0%': { transform: 'perspective(1000px) rotateX(-15deg) rotateY(0deg)' },
           '100%': { transform: 'perspective(1000px) rotateX(-15deg) rotateY(360deg)' },
+        },
+        // Cat-paw: slide in from right side + "pat" rotation
+        catPawInRight: {
+          '0%':   { opacity: '0', transform: 'translateY(-50%) translateX(100%) rotate(30deg)' },
+          '50%':  { opacity: '1', transform: 'translateY(-50%) translateX(10%) rotate(-14deg)' },
+          '70%':  { transform: 'translateY(-50%) translateX(20%) rotate(6deg)' },
+          '100%': { opacity: '1', transform: 'translateY(-50%) translateX(30%) rotate(-4deg)' },
+        },
+        // Cat-paw: slide in from left side + "pat" rotation (mirrored)
+        catPawInLeft: {
+          '0%':   { opacity: '0', transform: 'translateY(-50%) translateX(-100%) rotate(-30deg)' },
+          '50%':  { opacity: '1', transform: 'translateY(-50%) translateX(-10%) rotate(14deg)' },
+          '70%':  { transform: 'translateY(-50%) translateX(-20%) rotate(-6deg)' },
+          '100%': { opacity: '1', transform: 'translateY(-50%) translateX(-30%) rotate(4deg)' },
         },
       },
       backgroundImage: {

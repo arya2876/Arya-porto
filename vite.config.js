@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   base: '/',
   publicDir: 'public',
-  assetsInclude: ['**/*.glb', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg'],
+  assetsInclude: ['**/*.glb', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg', '**/*.riv'],
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),

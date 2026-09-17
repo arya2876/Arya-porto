@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from './context/ThemeContext';
 import { PortfolioDataProvider } from './context/PortfolioDataContext';
 import Layout from './components/layout/Layout';
-import SpinningLoader from './components/ui/SpinningLoader';
+import VideoLoader from './components/ui/VideoLoader';
 import SplashCursor from './components/ui/SplashCursor';
 import SmoothScrollProvider from './components/providers/SmoothScrollProvider';
 
@@ -30,56 +31,60 @@ const SECTION_COMPONENTS = {
 };
 
 
+import { LoadingProvider, useLoading } from './context/LoadingContext';
+
+function AppContent() {
+  const { isLoading, finishLoading } = useLoading();
+
+  return (
+    <SmoothScrollProvider>
+      {/* Minimalist Line Reveal Video Loading Screen */}
+      <AnimatePresence mode="wait">
+        {isLoading && (
+          <VideoLoader onFinish={finishLoading} />
+        )}
+      </AnimatePresence>
+
+      <SplashCursor
+        DENSITY_DISSIPATION={3}
+        VELOCITY_DISSIPATION={2.5}
+        PRESSURE={0.9}
+        CURL={15}
+        SPLAT_RADIUS={0.25}
+        SPLAT_FORCE={3500}
+        COLOR_UPDATE_SPEED={14}
+        RAINBOW_MODE={false}
+        COLOR="#3e48f2"
+      />
+      <Layout>
+        {NAV_ITEMS.map(({ id }) => {
+          const Section = SECTION_COMPONENTS[id];
+          // Hero berdiri sendiri; section lain MENGALIR NORMAL atas→bawah
+          // dengan tinggi natural mengikuti konten (tanpa sticky/pin,
+          // tanpa h-screen) — anchor <section id> tetap di sini.
+          if (id === 'home') return <Section key={id} />;
+          return (
+            <section key={id} id={id} className="relative">
+              <Section />
+            </section>
+          );
+        })}
+      </Layout>
+    </SmoothScrollProvider>
+  );
+}
+
 /**
  * Main App Component
  */
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Show loader for minimum 2.5 seconds
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2500);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isLoading) {
-    return <SpinningLoader fullScreen={true} />;
-  }
-
   return (
     <HelmetProvider>
       <ThemeProvider>
         <PortfolioDataProvider>
-          <SmoothScrollProvider>
-          <SplashCursor
-            DENSITY_DISSIPATION={3}
-            VELOCITY_DISSIPATION={2.5}
-            PRESSURE={0.9}
-            CURL={15}
-            SPLAT_RADIUS={0.25}
-            SPLAT_FORCE={3500}
-            COLOR_UPDATE_SPEED={14}
-            RAINBOW_MODE={false}
-            COLOR="#3e48f2"
-          />
-          <Layout>
-            {NAV_ITEMS.map(({ id }) => {
-              const Section = SECTION_COMPONENTS[id];
-              // Hero berdiri sendiri; section lain MENGALIR NORMAL atas→bawah
-              // dengan tinggi natural mengikuti konten (tanpa sticky/pin,
-              // tanpa h-screen) — anchor <section id> tetap di sini.
-              if (id === 'home') return <Section key={id} />;
-              return (
-                <section key={id} id={id} className="relative">
-                  <Section />
-                </section>
-              );
-            })}
-          </Layout>
-          </SmoothScrollProvider>
+          <LoadingProvider>
+            <AppContent />
+          </LoadingProvider>
         </PortfolioDataProvider>
       </ThemeProvider>
     </HelmetProvider>

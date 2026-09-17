@@ -73,16 +73,23 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Brand Section */}
           <div className="space-y-4">
-            <motion.h3
-              className="text-3xl font-bold font-display"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-secondary-500">
-                {authorName.toUpperCase()}
-              </span>
-            </motion.h3>
+            <a href="#home" onClick={(e) => handleLinkClick(e, '#home')} className="inline-flex items-center gap-3 group">
+              <img
+                src="/logo-aw.svg"
+                alt="AW Logo"
+                className="h-8 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              />
+              <motion.h3
+                className="text-2xl sm:text-3xl font-bold font-display"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-secondary-500">
+                  {authorName.toUpperCase()}
+                </span>
+              </motion.h3>
+            </a>
             <p className="text-light-text-secondary dark:text-dark-text-secondary leading-relaxed">
               Modern portfolio showcasing digital craftsmanship and innovative solutions.
               Creating experiences that blend functionality with aesthetics.

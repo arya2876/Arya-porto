@@ -388,7 +388,7 @@ export const StaggeredMenu = ({
           }}
         >
           {logoUrl ? (
-            <img src={logoUrl} alt="Logo" className="sm-logo-img" draggable={false} width={110} height={24} />
+            <img src={logoUrl} alt={brand || "Arya Winata"} className="sm-logo-img" draggable={false} width={104} height={34} />
           ) : (
             <span className="sm-logo-mark">{brand}</span>
           )}
